@@ -1,5 +1,5 @@
 package client.view;
 
-public class ChatView {
+public class ChatView extends JFrame {
     
 }

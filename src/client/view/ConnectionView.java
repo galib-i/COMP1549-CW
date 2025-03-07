@@ -1,6 +1,7 @@
 package client.view;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
 
@@ -29,7 +30,6 @@ public class ConnectionView extends JFrame {
         mainPanel.add(serverDetailsPanel, BorderLayout.CENTER);
 
         connectButton = new JButton("Connect");
-        connectButton.addActionListener(e -> requestConnection());
         mainPanel.add(connectButton, BorderLayout.SOUTH);
 
         rootPanel.add(mainPanel, BorderLayout.CENTER);
@@ -56,11 +56,21 @@ public class ConnectionView extends JFrame {
         return labelledField;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ConnectionView view = new ConnectionView();
-            view.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            view.setVisible(true);
-        });
+    public record ConnectionDetails(String userId, String serverIp, String serverPort) {}
+
+    public ConnectionDetails getConnectionDetails() {
+        return new ConnectionDetails(userIdField.getText(), serverIpField.getText(), serverPortField.getText());
+    }
+
+    public void setConnectButtonListener(ActionListener listener) {
+        connectButton.addActionListener(listener);
+    }
+
+    public void showMessage(String title, String message) {
+        if (title == "Error") {
+            JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }
