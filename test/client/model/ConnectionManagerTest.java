@@ -47,7 +47,7 @@ class ConnectionManagerTest {
 
     @Test
     void connect_ThrowsIllegalArgumentException_IfConnectWithInvalidServerIpFormat() {
-        assertIllegalArgumentException(validUserId, "192.168", validServerPort, "Invalid IP address!");
+        assertIllegalArgumentException(validUserId, "127.0.0", validServerPort, "Invalid IP address!");
         assertIllegalArgumentException(validUserId, "256.256.256.256", validServerPort, "Invalid IP address!");
         assertIllegalArgumentException(validUserId, "serverIp", validServerPort, "Invalid IP address!");
     }
