@@ -22,7 +22,24 @@ public class ConnectionController {
     }
 
     private void processConnection(Socket socket) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+            String userId = in.readLine(); // Read the userId sent by client
+            userManager.addUser(userId);
+
+            // Handle disconnect
+            try {
+                while (socket.isConnected()) {
+                    if (in.readLine() == null) break;
+                }
+            } finally {
+                userManager.removeUser(userId);
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

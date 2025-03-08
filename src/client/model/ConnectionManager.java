@@ -23,7 +23,7 @@ public class ConnectionManager {
             socket.close();
         }
     }
-
+    
     private void validateInput(String userId, String serverIp, String serverPort) {
         if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
             throw new IllegalArgumentException("All fields are required!");
