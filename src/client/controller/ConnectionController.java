@@ -5,6 +5,7 @@ import java.net.ConnectException;
 
 import client.model.ConnectionManager;
 import client.view.ConnectionView;
+import client.view.MainView;
 
 public class ConnectionController {
     private final ConnectionManager model;
@@ -23,7 +24,13 @@ public class ConnectionController {
         try {
             model.connect(details.userId(), details.serverIp(), details.serverPort());
             view.showMessage("Success", "Connected successfully!");
-            // Open the chat
+
+            MainView mainView = new MainView();
+            mainView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
+            mainView.setVisible(true);
+
+            view.dispose();
+            
         } catch (IllegalArgumentException e) {
             view.showMessage("Error", e.getMessage());
         } catch (ConnectException e) {
