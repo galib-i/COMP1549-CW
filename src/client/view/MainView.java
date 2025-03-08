@@ -47,15 +47,7 @@ public class MainView extends JFrame {
         setLocationRelativeTo(null); // Center window on the screen
  
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        exitWindowAction();
-    }
-    
-    public void updateCurrentServerLabel(String serverIp, String serverPort) {
-        currentServerLabel.setText("Connected to " + serverIp + ":" + serverPort);
-    }
-
-    public void quitButtonAction(ActionListener listener) {
-        quitButton.addActionListener(listener);
+        exitWindowAction(); // x button mimics quit button
     }
 
     private void exitWindowAction() {
@@ -65,5 +57,34 @@ public class MainView extends JFrame {
                 quitButton.doClick();
             }
         });
+    }
+
+    public void updateCurrentServerLabel(String serverIp, String serverPort) {
+        currentServerLabel.setText("Connected to " + serverIp + ":" + serverPort);
+    }
+
+    public void quitButtonAction(ActionListener listener) {
+        quitButton.addActionListener(listener);
+    }
+
+    public void sendButtonAction(ActionListener listener) {
+        sendButton.addActionListener(listener);
+        messageField.addActionListener(listener);
+    }
+
+    public String getMessage() {
+        String message = messageField.getText();
+
+        if (message.trim().isEmpty()) {  // Ignore empty messages
+            return null;
+        }
+
+        messageField.setText("");  // Clear message field
+
+        return message;
+    }
+
+    public ChatView getChatView() {
+        return ChatView;
     }
 }

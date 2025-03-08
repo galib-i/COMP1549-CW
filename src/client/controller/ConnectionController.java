@@ -11,6 +11,7 @@ public class ConnectionController {
     private final ConnectionManager model;
     private final ConnectionView view;
     private MainView mainView;
+    private MessageController messageController;
     
     public ConnectionController(ConnectionManager model, ConnectionView view) {
         this.model = model;
@@ -29,6 +30,9 @@ public class ConnectionController {
             this.mainView = new MainView();
             mainView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
             mainView.quitButtonAction(e -> quitConnection());
+
+            this.messageController = new MessageController(model, mainView, details.userId());
+            
             mainView.setVisible(true);
 
             view.dispose();
@@ -43,13 +47,8 @@ public class ConnectionController {
     }
 
     private void quitConnection() {
-        try {
-            model.disconnect();
-            mainView.dispose();
-            System.exit(0);
-        } catch (IOException e) {
-            view.showMessage("Error", e.getMessage());
-        }
+        model.disconnect();
+        mainView.dispose();
+        System.exit(0);
     }
-
 }

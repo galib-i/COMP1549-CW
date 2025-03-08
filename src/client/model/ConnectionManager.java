@@ -15,13 +15,19 @@ public class ConnectionManager {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
             
-        out.println(userId);  // Send the user ID to the server
+        out.println(userId);  // Send the userId to the server
     }
 
-    public void disconnect() throws IOException {
-        if (socket != null) {
+    public void disconnect() {
+        try {
+            if (socket != null) 
             socket.close();
-        }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
+
+    public void sendMessage(String message) {
+        out.println(message);
     }
     
     private void validateInput(String userId, String serverIp, String serverPort) {

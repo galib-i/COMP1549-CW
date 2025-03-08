@@ -34,6 +34,7 @@ public class ConnectionView extends JFrame {
 
         rootPanel.add(mainPanel, BorderLayout.CENTER);
         add(rootPanel);
+        getRootPane().setDefaultButton(connectButton); // Enter key mimics button click
         pack();
     
         setLocationRelativeTo(null); // Center window on the screen

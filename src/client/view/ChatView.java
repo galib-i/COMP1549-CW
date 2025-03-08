@@ -20,6 +20,11 @@ public class ChatView extends JPanel {
         add(chatTabs, BorderLayout.CENTER);
     }
 
+    public void displayMessage(String chatName, String sender, String message) {
+        ChatPanel chatPanel = chats.get(chatName);
+        chatPanel.chatArea.append(sender + ": " + message + "\n");
+    }
+
     private static class ChatPanel extends JPanel {
         private final JTextArea chatArea;
 
@@ -35,6 +40,5 @@ public class ChatView extends JPanel {
             scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
             add(scrollPane, BorderLayout.CENTER);
         }
-
     }
 }

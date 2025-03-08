@@ -29,7 +29,6 @@ public class ConnectionController {
             String userId = in.readLine(); // Read the userId sent by client
             userManager.addUser(userId);
 
-            // Handle disconnect
             try {
                 while (socket.isConnected()) {
                     if (in.readLine() == null) break;
