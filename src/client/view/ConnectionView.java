@@ -38,6 +38,7 @@ public class ConnectionView extends JFrame {
     
         setLocationRelativeTo(null); // Center window on the screen
         setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
     private JPanel createLabelledField(String labelText, String placeholder, JTextField field) {
@@ -62,7 +63,7 @@ public class ConnectionView extends JFrame {
         return new ConnectionDetails(userIdField.getText(), serverIpField.getText(), serverPortField.getText());
     }
 
-    public void setConnectButtonListener(ActionListener listener) {
+    public void connectButtonAction(ActionListener listener) {
         connectButton.addActionListener(listener);
     }
 

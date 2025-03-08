@@ -17,7 +17,13 @@ public class ConnectionManager {
             
         out.println(userId);  // Send the user ID to the server
     }
-    
+
+    public void disconnect() throws IOException {
+        if (socket != null) {
+            socket.close();
+        }
+    }
+
     private void validateInput(String userId, String serverIp, String serverPort) {
         if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
             throw new IllegalArgumentException("All fields are required!");

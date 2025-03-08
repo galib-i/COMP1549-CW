@@ -2,6 +2,9 @@ package client.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MainView extends JFrame {
     private final ChatView ChatView;
@@ -42,9 +45,25 @@ public class MainView extends JFrame {
         add(rootPanel);
         setSize(700, 400);
         setLocationRelativeTo(null); // Center window on the screen
+ 
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        exitWindowAction();
     }
-
+    
     public void updateCurrentServerLabel(String serverIp, String serverPort) {
         currentServerLabel.setText("Connected to " + serverIp + ":" + serverPort);
+    }
+
+    public void quitButtonAction(ActionListener listener) {
+        quitButton.addActionListener(listener);
+    }
+
+    private void exitWindowAction() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                quitButton.doClick();
+            }
+        });
     }
 }

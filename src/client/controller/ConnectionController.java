@@ -10,23 +10,25 @@ import client.view.MainView;
 public class ConnectionController {
     private final ConnectionManager model;
     private final ConnectionView view;
+    private MainView mainView;
     
     public ConnectionController(ConnectionManager model, ConnectionView view) {
         this.model = model;
         this.view = view;
         
-        view.setConnectButtonListener(e -> handleConnection());
+        view.connectButtonAction(e -> requestConnection());
     }
     
-    private void handleConnection() {
+    private void requestConnection() {
         ConnectionView.ConnectionDetails details = view.getConnectionDetails();
         
         try {
             model.connect(details.userId(), details.serverIp(), details.serverPort());
             view.showMessage("Success", "Connected successfully!");
 
-            MainView mainView = new MainView();
+            this.mainView = new MainView();
             mainView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
+            mainView.quitButtonAction(e -> quitConnection());
             mainView.setVisible(true);
 
             view.dispose();
@@ -35,6 +37,16 @@ public class ConnectionController {
             view.showMessage("Error", e.getMessage());
         } catch (ConnectException e) {
             view.showMessage("Error", "Connection refused!\n(Is the chat server running?)");
+        } catch (IOException e) {
+            view.showMessage("Error", e.getMessage());
+        }
+    }
+
+    private void quitConnection() {
+        try {
+            model.disconnect();
+            mainView.dispose();
+            System.exit(0);
         } catch (IOException e) {
             view.showMessage("Error", e.getMessage());
         }

@@ -13,7 +13,7 @@ public class Server {
         UserManager userManager = new UserManager();
         ConnectionController connectionController = new ConnectionController(userManager);
         
-        System.out.println("Server is running...");
+        System.out.println("Starting server...");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
                 connectionController.handleNewConnection(serverSocket.accept());
