@@ -7,6 +7,8 @@ public class ConnectionManager {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private Thread messageListenerThread;
+    private MessageListener messageListener;
     
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         validateInput(userId, serverIp, serverPort);
@@ -16,15 +18,45 @@ public class ConnectionManager {
         out = new PrintWriter(socket.getOutputStream(), true);
             
         out.println(userId);  // Send the userId to the server
+
+        messageListenerThread = new Thread(this::listenForMessages);
+        messageListenerThread.setDaemon(true);
+        messageListenerThread.start();
+    }
+
+    public void setMessageListener(MessageListener listener) {
+        this.messageListener = listener;
+    }
+    
+    private void listenForMessages() {
+        try {
+            String message;
+            while ((message = in.readLine()) != null) {
+                if (messageListener != null && !message.isEmpty()) {
+                    int separatorIndex = message.indexOf(": ");
+                    if (separatorIndex > 0) {
+                        String sender = message.substring(0, separatorIndex);
+                        String content = message.substring(separatorIndex + 2);
+                        messageListener.onMessageReceived(sender, content);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            if (!socket.isClosed()) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void disconnect() {
         try {
-            if (socket != null) 
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        }}
+        }
+    }
 
     public void sendMessage(String message) {
         out.println(message);

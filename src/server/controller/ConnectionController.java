@@ -27,14 +27,19 @@ public class ConnectionController {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
             String userId = in.readLine(); // Read the userId sent by client
-            userManager.addUser(userId);
+
+            userManager.addUser(userId, out);
+            messageController.sendSystemMessage(userId + " has joined the chat.");
 
             try {
-                while (socket.isConnected()) {
-                    if (in.readLine() == null) break;
+                String message;
+                while ((message = in.readLine()) != null) {
+                    messageController.sendGroupMessage(userId, message);
                 }
             } finally {
+                messageController.sendSystemMessage(userId + " has left the chat.");
                 userManager.removeUser(userId);
+
                 socket.close();
             }
         } catch (IOException e) {

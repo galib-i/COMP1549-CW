@@ -47,7 +47,7 @@ public class MainView extends JFrame {
         setLocationRelativeTo(null); // Center window on the screen
  
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        exitWindowAction(); // x button mimics quit button
+        exitWindowAction(); // x button mimics quit button click
     }
 
     private void exitWindowAction() {
@@ -69,12 +69,11 @@ public class MainView extends JFrame {
 
     public void sendButtonAction(ActionListener listener) {
         sendButton.addActionListener(listener);
-        messageField.addActionListener(listener);
+        messageField.addActionListener(listener); // Enter key mimics send button click
     }
 
     public String getMessage() {
         String message = messageField.getText();
-
         if (message.trim().isEmpty()) {  // Ignore empty messages
             return null;
         }
@@ -86,5 +85,9 @@ public class MainView extends JFrame {
 
     public ChatView getChatView() {
         return ChatView;
+    }
+
+    public UserListView getUserListView() {
+        return userListView;
     }
 }
