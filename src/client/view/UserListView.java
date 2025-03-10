@@ -20,11 +20,19 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void updateUserList(Collection<String> users) {
+
+    public void addUser(String user) {
+        SwingUtilities.invokeLater(() -> usersModel.addElement(user));
+    }
+
+    public void updateUserList(Collection<String> users, String userId) {
         SwingUtilities.invokeLater(() -> {
             usersModel.clear();
             for (String user : users) {
-                usersModel.addElement(user);
+                if (user.equals(userId)) {
+                    user += " (You)";
+                }
+                addUser(user);
             }
         });
     }

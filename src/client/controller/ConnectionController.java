@@ -24,17 +24,16 @@ public class ConnectionController {
         ConnectionView.ConnectionDetails details = view.getConnectionDetails();
         
         try {
-            model.connect(details.userId(), details.serverIp(), details.serverPort());
-            view.showMessage("Success", "Connected successfully!");
-
             this.mainView = new MainView();
             mainView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
             mainView.quitButtonAction(e -> quitConnection());
 
             this.messageController = new MessageController(model, mainView, details.userId());
-            
-            mainView.setVisible(true);
 
+            model.connect(details.userId(), details.serverIp(), details.serverPort());
+            view.showMessage("Success", "Connected successfully!");
+
+            mainView.setVisible(true);
             view.dispose();
             
         } catch (IllegalArgumentException e) {

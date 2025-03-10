@@ -30,7 +30,7 @@ public class MessageController implements MessageListener {
             // Format is: "Current users: [user1, user2, ...]"
             String userListStr = content.substring(content.indexOf('['), content.indexOf(']') + 1);
             List<String> users = parseUserList(userListStr);
-            mainView.getUserListView().updateUserList(users);
+            mainView.getUserListView().updateUserList(users, userId);
         } else {
             // Regular message handling (existing code)
             mainView.getChatView().displayMessage("Group", sender, content);
@@ -52,5 +52,10 @@ public class MessageController implements MessageListener {
         if (messageText != null) {
             connectionManager.sendMessage(messageText);
         }
+    }
+
+    public void handleSelfJoin(String welcomeMessage, String userId) {
+        mainView.getChatView().displayMessage("Group", "[SERVER]", welcomeMessage);
+        mainView.getUserListView().addUser(userId);
     }
 }
