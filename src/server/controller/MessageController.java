@@ -1,7 +1,8 @@
 package server.controller;
 
-import server.model.UserManager;
 import java.io.PrintWriter;
+
+import server.model.UserManager;
 public class MessageController {
     private final UserManager userManager;
 

@@ -1,11 +1,14 @@
 package test.client.model;
  
- import org.junit.jupiter.api.BeforeEach;
- import org.junit.jupiter.api.Test;
- import java.net.ConnectException;
- import client.model.ConnectionManager;
- 
- import static org.junit.jupiter.api.Assertions.*;
+ import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.net.ConnectException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import client.model.ConnectionManager;
  
  class ConnectionManagerTest {
      private ConnectionManager connectionManager;

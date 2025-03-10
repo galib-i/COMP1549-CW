@@ -1,12 +1,12 @@
 package client.controller;
 
-import client.model.ConnectionManager;
-import client.model.MessageListener;
-import client.view.MainView;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import client.model.ConnectionManager;
+import client.model.MessageListener;
+import client.view.MainView;
 
 public class MessageController implements MessageListener {
     private final ConnectionManager connectionManager;

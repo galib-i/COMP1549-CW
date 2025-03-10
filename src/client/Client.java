@@ -1,11 +1,11 @@
 package client;
 
 import javax.swing.SwingUtilities;
-import client.view.ConnectionView;
+
 import client.controller.ConnectionController;
 import client.model.ConnectionManager;
+import client.view.ConnectionView;
 
- 
 public class Client {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

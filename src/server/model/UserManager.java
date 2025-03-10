@@ -1,10 +1,10 @@
 package server.model;
 
 import java.io.PrintWriter;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManager {
     private final Map<String, PrintWriter> connectedUsers;

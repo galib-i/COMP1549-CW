@@ -1,10 +1,10 @@
 package server;
 
-import server.controller.ConnectionController;
-import server.model.UserManager;
-
 import java.io.IOException;
 import java.net.ServerSocket;
+
+import server.controller.ConnectionController;
+import server.model.UserManager;
 
 public class Server {
     private static final int PORT = 1549;
