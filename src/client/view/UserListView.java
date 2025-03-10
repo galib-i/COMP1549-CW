@@ -2,7 +2,7 @@ package client.view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
+import java.util.List;
 
 public class UserListView extends JPanel {
     private final JList<String> usersList;
@@ -20,20 +20,14 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    public void updateUserList(List<String> users, String userId) {
+        // Add suffix (You) to the current user
+        Integer index = users.indexOf(userId);
+        users.set(index, userId + " (You)");
 
-    public void addUser(String user) {
-        SwingUtilities.invokeLater(() -> usersModel.addElement(user));
-    }
-
-    public void updateUserList(Collection<String> users, String userId) {
         SwingUtilities.invokeLater(() -> {
             usersModel.clear();
-            for (String user : users) {
-                if (user.equals(userId)) {
-                    user += " (You)";
-                }
-                addUser(user);
-            }
+            usersModel.addAll(users);
         });
     }
 }
