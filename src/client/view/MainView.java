@@ -74,11 +74,10 @@ public class MainView extends JFrame {
 
     public String getMessage() {
         String message = messageField.getText();
+        messageField.setText("");  // Clear message field
         if (message.trim().isEmpty()) {  // Ignore empty messages
             return null;
         }
-
-        messageField.setText("");  // Clear message field
 
         return message;
     }
