@@ -20,7 +20,7 @@ public class ConnectionManager {
         socket = new Socket(serverIp, Integer.parseInt(serverPort));
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
-            
+        
         out.println(userId);  // Send the userId to the server
 
         messageListenerThread = new Thread(this::listenForMessages);
@@ -36,21 +36,18 @@ public class ConnectionManager {
         try {
             String message;
             while ((message = in.readLine()) != null) {
-                if (messageListener != null && !message.isEmpty()) {
+                if (messageListener != null) {
                     int separatorIndex = message.indexOf(": ");
-                    if (separatorIndex > 0) {
-                        String sender = message.substring(0, separatorIndex);
-                        String content = message.substring(separatorIndex + 2);
-                        messageListener.onMessageReceived(sender, content);
-                    }
+                    String sender = message.substring(0, separatorIndex);
+                    String content = message.substring(separatorIndex + 2);
+                    messageListener.onMessageReceived(sender, content);
                 }
             }
         } catch (IOException e) {
             if (!socket.isClosed()) {
                 e.printStackTrace();
             }
-        }
-    }
+        }}
 
     public void disconnect() {
         try {
@@ -71,6 +68,7 @@ public class ConnectionManager {
             throw new IllegalArgumentException("All fields are required!");
         }
 
+        
         if (!userId.matches("[A-Za-z0-9]+")) {
             throw new IllegalArgumentException("User ID must be alphanumeric!");
         }
