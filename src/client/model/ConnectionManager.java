@@ -23,6 +23,14 @@ public class ConnectionManager {
         
         out.println(userId);  // Send the userId to the server
 
+        String response = in.readLine(); // Check if the userId is unique
+        if (response.equals("USERID_NOT_UNIQUE")) {
+            socket.close();
+            throw new IllegalArgumentException("User ID already in use!");
+        } else {
+            processMessage(response);
+        }
+
         messageListenerThread = new Thread(this::listenForMessages);
         messageListenerThread.setDaemon(true);
         messageListenerThread.start();
@@ -36,18 +44,23 @@ public class ConnectionManager {
         try {
             String message;
             while ((message = in.readLine()) != null) {
-                if (messageListener != null) {
-                    int separatorIndex = message.indexOf(": ");
-                    String sender = message.substring(0, separatorIndex);
-                    String content = message.substring(separatorIndex + 2);
-                    messageListener.onMessageReceived(sender, content);
-                }
+                processMessage(message);
             }
         } catch (IOException e) {
             if (!socket.isClosed()) {
                 e.printStackTrace();
             }
-        }}
+        }
+    }
+    
+    private void processMessage(String message) {
+        if (messageListener != null) {
+            int separatorIndex = message.indexOf(": ");
+            String sender = message.substring(0, separatorIndex);
+            String content = message.substring(separatorIndex + 2);
+            messageListener.onMessageReceived(sender, content);
+        }
+    }
 
     public void disconnect() {
         try {

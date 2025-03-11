@@ -13,6 +13,10 @@ public class UserManager {
         this.connectedUsers = new ConcurrentHashMap<>();
     }
 
+    public boolean userExists(String userId) {
+        return connectedUsers.containsKey(userId);
+    }
+
     public void addUser(String userId, PrintWriter writer) {
         connectedUsers.put(userId, writer);
         broadcastUserList();

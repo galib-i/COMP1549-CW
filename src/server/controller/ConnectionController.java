@@ -28,6 +28,13 @@ public class ConnectionController {
 
             String userId = in.readLine(); // Read the userId sent by client
 
+            if (userManager.userExists(userId)) {
+                out.println("USERID_NOT_UNIQUE");
+                socket.close();
+
+                return;
+            }
+
             userManager.addUser(userId, out);
             messageController.sendSystemMessage(userId + " has joined the chat.");
 
