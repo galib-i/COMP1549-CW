@@ -5,12 +5,12 @@ import java.net.ConnectException;
 
 import client.model.ConnectionManager;
 import client.view.ConnectionView;
-import client.view.MainView;
+import client.view.ChatWindowView;
 
 public class ConnectionController {
     private final ConnectionManager model;
     private final ConnectionView view;
-    private MainView mainView;
+    private ChatWindowView chatWindowView;
     private MessageController messageController;
     
     public ConnectionController(ConnectionManager model, ConnectionView view) {
@@ -24,16 +24,16 @@ public class ConnectionController {
         ConnectionView.ConnectionDetails details = view.getConnectionDetails();
         
         try {
-            this.mainView = new MainView();
-            mainView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
-            mainView.quitButtonAction(e -> quitConnection());
+            this.chatWindowView = new ChatWindowView();
+            chatWindowView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
+            chatWindowView.quitButtonAction(e -> quitConnection());
 
-            this.messageController = new MessageController(model, mainView, details.userId());
+            this.messageController = new MessageController(model, chatWindowView, details.userId());
 
             model.connect(details.userId(), details.serverIp(), details.serverPort());
             view.showMessage("Success", "Connected successfully!");
 
-            mainView.setVisible(true);
+            chatWindowView.setVisible(true);
             view.dispose();
             
         } catch (IllegalArgumentException e) {
@@ -47,7 +47,7 @@ public class ConnectionController {
 
     private void quitConnection() {
         model.disconnect();
-        mainView.dispose();
+        chatWindowView.dispose();
         System.exit(0);
     }
 }

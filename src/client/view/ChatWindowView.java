@@ -13,21 +13,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class MainView extends JFrame {
-    private final ChatView ChatView;
+public class ChatWindowView extends JFrame {
+    private final ChatView chatView;
     private final UserListView userListView;
     private JTextField messageField;
     private JButton sendButton;
     private JLabel currentServerLabel;
     private JButton quitButton;
 
-    public MainView() {
+    public ChatWindowView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
         JPanel mainPanel = new JPanel(new BorderLayout(0, 10)); 
       
-        ChatView = new ChatView();
-        mainPanel.add(ChatView, BorderLayout.CENTER);
+        chatView = new ChatView();
+        mainPanel.add(chatView, BorderLayout.CENTER);
 
         userListView = new UserListView();
         rootPanel.add(userListView, BorderLayout.EAST);
@@ -90,7 +90,7 @@ public class MainView extends JFrame {
     }
 
     public ChatView getChatView() {
-        return ChatView;
+        return chatView;
     }
 
     public UserListView getUserListView() {

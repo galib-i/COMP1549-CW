@@ -6,20 +6,20 @@ import java.util.List;
 
 import client.model.ConnectionManager;
 import client.model.MessageListener;
-import client.view.MainView;
+import client.view.ChatWindowView;
 
 public class MessageController implements MessageListener {
     private final ConnectionManager connectionManager;
-    private final MainView mainView;
+    private final ChatWindowView chatWindowView;
     private final String userId;
     
-    public MessageController(ConnectionManager connectionManager, MainView mainView, String userId) {
+    public MessageController(ConnectionManager connectionManager, ChatWindowView chatWindowView, String userId) {
         this.connectionManager = connectionManager;
-        this.mainView = mainView;
+        this.chatWindowView = chatWindowView;
         this.userId = userId;
 
-        mainView.sendButtonAction(e -> sendMessage());
-        mainView.getUserListView().viewDetailsAction(e -> showUserDetails());
+        chatWindowView.sendButtonAction(e -> sendMessage());
+        chatWindowView.getUserListView().viewDetailsAction(e -> showUserDetails());
         connectionManager.setMessageListener(this);
     }
     
@@ -29,7 +29,7 @@ public class MessageController implements MessageListener {
         if (sender.equals("[USERLIST]")) {
             String userListStr = content.substring(content.indexOf('['), content.indexOf(']') + 1);
             List<String> users = parseUserList(userListStr);
-            mainView.getUserListView().updateUserList(users, userId);
+            chatWindowView.getUserListView().updateUserList(users, userId);
         } else if (sender.equals("[USER_DETAILS]")) {
             // Format: userId|role|connectionInfo
             String[] parts = content.split("\\|");
@@ -40,7 +40,7 @@ public class MessageController implements MessageListener {
                 displayUserDetails(detailsUserId, role, connectionInfo);
             }
         } else {
-            mainView.getChatView().displayMessage("Group", sender, content);
+            chatWindowView.getChatView().displayMessage("Group", sender, content);
         }
     }
     
@@ -54,12 +54,12 @@ public class MessageController implements MessageListener {
     }
     
     private void sendMessage() {
-        String messageText = mainView.getMessage();
+        String messageText = chatWindowView.getMessage();
         connectionManager.sendMessage(messageText);
     }
 
     private void showUserDetails() {
-        String selectedUser = mainView.getUserListView().getSelectedUser();
+        String selectedUser = chatWindowView.getUserListView().getSelectedUser();
         if (selectedUser != null) {
             // Remove "(You)" suffix if present
             if (selectedUser.endsWith(" (You)")) {
@@ -70,7 +70,7 @@ public class MessageController implements MessageListener {
     }
     
     private void displayUserDetails(String userId, String role, String connectionInfo) {
-        mainView.getUserListView().showMessage(
+        chatWindowView.getUserListView().showMessage(
             userId + "'s details", 
             "User ID: " + userId + "\n" +
             "Role: " + role + "\n" +
