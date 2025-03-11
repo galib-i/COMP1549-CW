@@ -46,5 +46,18 @@ public class ChatView extends JPanel {
             scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
             add(scrollPane, BorderLayout.CENTER);
         }
+    } 
+
+    public void openPrivateChat(String userId) {
+        ChatPanel privateChatPanel = new ChatPanel();
+        chats.put(userId, privateChatPanel);
+        chatTabs.addTab(userId, privateChatPanel);
+    }
+
+    public void closePrivateChat(String userId) {
+        ChatPanel privateChatPanel = chats.get(userId);
+        int index = chatTabs.indexOfComponent(privateChatPanel);
+        chats.remove(userId);
+        chatTabs.removeTabAt(index);
     }
 }

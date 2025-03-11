@@ -31,22 +31,28 @@ public class ConnectionController {
             if (userManager.userExists(userId)) {
                 out.println("USERID_NOT_UNIQUE");
                 socket.close();
-
                 return;
             }
 
-            userManager.addUser(userId, out);
+            // Create connection info string from socket
+            String connectionInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            
+            userManager.addUser(userId, connectionInfo, out);
             messageController.sendSystemMessage(userId + " has joined the chat.");
 
             try {
                 String message;
                 while ((message = in.readLine()) != null) {
-                    messageController.sendGroupMessage(userId, message);
+                    if (message.startsWith("[USER_DETAILS_REQUEST]")) {
+                        String requestedUserId = message.substring("[USER_DETAILS_REQUEST]".length());
+                        messageController.sendUserDetails(userId, requestedUserId);
+                    } else {
+                        messageController.sendGroupMessage(userId, message);
+                    }
                 }
             } finally {
                 messageController.sendSystemMessage(userId + " has left the chat.");
                 userManager.removeUser(userId);
-
                 socket.close();
             }
         } catch (IOException e) {

@@ -19,6 +19,7 @@ public class MessageController implements MessageListener {
         this.userId = userId;
 
         mainView.sendButtonAction(e -> sendMessage());
+        mainView.getUserListView().viewDetailsAction(e -> showUserDetails());
         connectionManager.setMessageListener(this);
     }
     
@@ -26,18 +27,24 @@ public class MessageController implements MessageListener {
     public void onMessageReceived(String sender, String content) {
         // Process user list updates
         if (sender.equals("[USERLIST]")) {
-            // Extract user list from message
-            // Format is: "Current users: [user1, user2, ...]"
             String userListStr = content.substring(content.indexOf('['), content.indexOf(']') + 1);
             List<String> users = parseUserList(userListStr);
             mainView.getUserListView().updateUserList(users, userId);
+        } else if (sender.equals("[USER_DETAILS]")) {
+            // Format: userId|role|connectionInfo
+            String[] parts = content.split("\\|");
+            if (parts.length == 3) {
+                String detailsUserId = parts[0];
+                String role = parts[1];
+                String connectionInfo = parts[2];
+                displayUserDetails(detailsUserId, role, connectionInfo);
+            }
         } else {
             mainView.getChatView().displayMessage("Group", sender, content);
         }
     }
     
     private List<String> parseUserList(String userListStr) {
-        // Remove brackets and split by comma
         String cleanListStr = userListStr.substring(1, userListStr.length() - 1);
         if (cleanListStr.trim().isEmpty()) {
             return new ArrayList<>();
@@ -48,8 +55,26 @@ public class MessageController implements MessageListener {
     
     private void sendMessage() {
         String messageText = mainView.getMessage();
-        if (messageText != null) {
-            connectionManager.sendMessage(messageText);
+        connectionManager.sendMessage(messageText);
+    }
+
+    private void showUserDetails() {
+        String selectedUser = mainView.getUserListView().getSelectedUser();
+        if (selectedUser != null) {
+            // Remove "(You)" suffix if present
+            if (selectedUser.endsWith(" (You)")) {
+                selectedUser = selectedUser.substring(0, selectedUser.length() - 6);
+            }
+            connectionManager.sendUserDetailsRequest(selectedUser);
         }
+    }
+    
+    private void displayUserDetails(String userId, String role, String connectionInfo) {
+        mainView.getUserListView().showMessage(
+            userId + "'s details", 
+            "User ID: " + userId + "\n" +
+            "Role: " + role + "\n" +
+            "Connected through: " + connectionInfo
+        );
     }
 }

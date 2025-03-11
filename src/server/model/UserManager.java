@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManager {
-    private final Map<String, PrintWriter> connectedUsers;
+    private final Map<String, User> connectedUsers;
 
     public UserManager() {
         this.connectedUsers = new ConcurrentHashMap<>();
@@ -17,8 +17,9 @@ public class UserManager {
         return connectedUsers.containsKey(userId);
     }
 
-    public void addUser(String userId, PrintWriter writer) {
-        connectedUsers.put(userId, writer);
+    public void addUser(String userId, String connectionInfo, PrintWriter writer) {
+        User user = new User(userId, connectionInfo, writer);
+        connectedUsers.put(userId, user);
         broadcastUserList();
     }
 
@@ -27,17 +28,21 @@ public class UserManager {
         broadcastUserList();
     }
     
-    public Set<String> getUsers() {
+    public Set<String> getUserIds() {
         return connectedUsers.keySet();
     }
-
-    public Collection<PrintWriter> getUserWriters() {
+    
+    public Collection<User> getUsers() {
         return connectedUsers.values();
     }
-
+    
+    public User getUserById(String userId) {
+        return connectedUsers.get(userId);
+    }
+    
     private void broadcastUserList() {
-        for (PrintWriter writer : getUserWriters()) {
-            writer.println("[USERLIST]: Current users: " + getUsers());
+        for (User user : getUsers()) {
+            user.getWriter().println("[USERLIST]: Current users: " + getUserIds());
         }
     }
 }

@@ -54,11 +54,18 @@ public class ConnectionManager {
     }
     
     private void processMessage(String message) {
-        if (messageListener != null) {
-            int separatorIndex = message.indexOf(": ");
-            String sender = message.substring(0, separatorIndex);
-            String content = message.substring(separatorIndex + 2);
-            messageListener.onMessageReceived(sender, content);
+        if (message.startsWith("[USER_DETAILS]:")) {
+            if (messageListener != null) {
+                String content = message.substring("[USER_DETAILS]:".length()).trim();
+                messageListener.onMessageReceived("[USER_DETAILS]", content);
+            }
+        } else {
+            if (messageListener != null) {
+                int separatorIndex = message.indexOf(": ");
+                String sender = message.substring(0, separatorIndex);
+                String content = message.substring(separatorIndex + 2);
+                messageListener.onMessageReceived(sender, content);
+            }
         }
     }
 
@@ -74,6 +81,10 @@ public class ConnectionManager {
 
     public void sendMessage(String message) {
         out.println(message);
+    }
+    
+    public void sendUserDetailsRequest(String userId) {
+        sendMessage("[USER_DETAILS_REQUEST]" + userId);
     }
     
     private void validateInput(String userId, String serverIp, String serverPort) {
