@@ -32,8 +32,8 @@ public class MessageController {
 
     public void sendUserNotification(String targetId, String content) {
         User targetUser = userManager.getUserById(targetId);
-        Message<String> announcement = Message.announcement(content);
-        String formattedMessage = MessageFormatter.format(announcement);
+        Message<String> notification = Message.userNotification(content);
+        String formattedMessage = MessageFormatter.format(notification);
         targetUser.getWriter().println(formattedMessage);
 
     }

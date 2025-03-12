@@ -6,6 +6,7 @@ public class Message<T> {
         REJECT_USER_JOIN,
         MESSAGE,
         ANNOUNCEMENT,
+        USER_NOTIFICATION,
         USER_LIST,
         USER_DETAILS_REQUEST,
         USER_DETAILS_RESPONSE,
@@ -47,6 +48,10 @@ public class Message<T> {
     
     public static Message<String> announcement(String content) {
         return new Message<>(Type.ANNOUNCEMENT, "SERVER", content);
+    }
+
+    public static Message<String> userNotification(String content) {
+        return new Message<>(Type.USER_NOTIFICATION, "SERVER", content);
     }
     
     public static Message<String> requestUserDetails(String userId) {

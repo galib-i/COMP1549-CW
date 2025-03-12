@@ -72,11 +72,12 @@ public class ConnectionController {
                 }
             } finally {
                 messageController.sendServerMessage(userId + " has left the chat.");
-                boolean coordinatorCheck = userManager.removeUser(userId);
-                if (coordinatorCheck) {
+                boolean isCoordinator = userManager.removeUser(userId);
+                if (isCoordinator) {
                     String newCoordinatorId = userManager.getCoordinator();
                     messageController.sendServerMessage("The previous coordinator, " + userId + ", has left - the new coordinator is " + newCoordinatorId + ".");
                 }
+
                 messageController.sendServerUserList();
                 socket.close();
             }

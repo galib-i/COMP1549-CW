@@ -36,7 +36,7 @@ public class MessageController implements MessageListener {
             case MESSAGE -> {
                 chatWindowView.getChatView().displayMessage("Group", message.getSender(), (String)message.getContent());
             }
-            case ANNOUNCEMENT -> {
+            case ANNOUNCEMENT, USER_NOTIFICATION -> {
                 chatWindowView.getChatView().displayMessage("Group", "[SERVER]", (String)message.getContent());
             }
             default -> {}
