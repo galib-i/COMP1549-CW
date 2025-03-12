@@ -2,14 +2,14 @@ package server.model;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManager {
     private final Map<String, User> connectedUsers;
 
     public UserManager() {
-        this.connectedUsers = new ConcurrentHashMap<>();
+        this.connectedUsers = new LinkedHashMap<>(); // Sorted by insertion order
     }
 
     public boolean addUser(String userId, String connectionInfo, PrintWriter writer) {
@@ -18,25 +18,46 @@ public class UserManager {
         }
 
         User user = new User(userId, connectionInfo, writer);
-        connectedUsers.put(userId, user);
+        if (connectedUsers.isEmpty()) { // Sets the first user as the coordinator
+            user.setCoordinator();
+        }
 
+        connectedUsers.put(userId, user);
         return true;
     }
 
-    public void removeUser(String userId) {
+    public boolean removeUser(String userId) {
+        boolean isCoordinator = userId.equals(getCoordinator());
         connectedUsers.remove(userId);
+    
+        if (isCoordinator && !connectedUsers.isEmpty()) { // Reassigns coordinator role if the current one leaves
+            User newCoordinator = connectedUsers.entrySet().iterator().next().getValue();
+            newCoordinator.setCoordinator();
+            return true;
+        }
+
+        return false;
+    }
+        
+    public Collection<User> getUsers() {
+        return connectedUsers.values();
     }
     
     public String[] getUserIds() {
         return connectedUsers.keySet().toArray(new String[0]);
     }
-    
-    public Collection<User> getUsers() {
-        return connectedUsers.values();
-    }
-    
+
     public User getUserById(String userId) {
         return connectedUsers.get(userId);
     }
 
+    public String getCoordinator() {
+        for (User user : connectedUsers.values()) {
+            if (user.getRole().equals("COORDINATOR")) {
+                return user.getUserId();
+            }
+        }
+
+        return null;
+    }
 }

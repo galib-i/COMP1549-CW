@@ -29,6 +29,14 @@ public class MessageController {
             user.getWriter().println(formattedMessage);
         }
     }
+
+    public void sendUserNotification(String targetId, String content) {
+        User targetUser = userManager.getUserById(targetId);
+        Message<String> announcement = Message.announcement(content);
+        String formattedMessage = MessageFormatter.format(announcement);
+        targetUser.getWriter().println(formattedMessage);
+
+    }
     
     public void sendUserDetails(String requesterId, String userId) {
         User requester = userManager.getUserById(requesterId);

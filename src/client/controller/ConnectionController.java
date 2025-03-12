@@ -34,7 +34,6 @@ public class ConnectionController {
             this.messageController = new MessageController(model, chatWindowView, userId);
 
             model.connect(details.userId(), serverIp, serverPort);
-            view.showMessage("Success", "Connected successfully!");
 
             chatWindowView.setVisible(true);
             view.dispose();

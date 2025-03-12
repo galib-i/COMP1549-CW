@@ -78,10 +78,6 @@ public class ConnectionView extends JFrame {
     }
 
     public void showMessage(String title, String message) {
-        if (title == "Error") {
-            JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
-        }
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
     }
 }
