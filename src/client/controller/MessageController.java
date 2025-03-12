@@ -1,12 +1,11 @@
 package client.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import client.model.ConnectionManager;
 import client.model.MessageListener;
 import client.view.ChatWindowView;
+import common.model.Message;
 
 public class MessageController implements MessageListener {
     private final ConnectionManager connectionManager;
@@ -24,33 +23,24 @@ public class MessageController implements MessageListener {
     }
     
     @Override
-    public void onMessageReceived(String sender, String content) {
-        // Process user list updates
-        if (sender.equals("[USERLIST]")) {
-            String userListStr = content.substring(content.indexOf('['), content.indexOf(']') + 1);
-            List<String> users = parseUserList(userListStr);
-            chatWindowView.getUserListView().updateUserList(users, userId);
-        } else if (sender.equals("[USER_DETAILS]")) {
-            // Format: userId|role|connectionInfo
-            String[] parts = content.split("\\|");
-            if (parts.length == 3) {
-                String detailsUserId = parts[0];
-                String role = parts[1];
-                String connectionInfo = parts[2];
-                displayUserDetails(detailsUserId, role, connectionInfo);
+    public void onMessageReceived(Message<?> message) {
+        switch (message.getType()) {
+            case USER_LIST -> {
+                String[] users = (String[]) message.getContent();
+                chatWindowView.getUserListView().updateUserList(Arrays.asList(users), userId);
             }
-        } else {
-            chatWindowView.getChatView().displayMessage("Group", sender, content);
+            case USER_DETAILS_RESPONSE -> {
+                String[] details = (String[]) message.getContent();
+                displayUserDetails(details[0], details[1], details[2]);
+            }
+            case MESSAGE -> {
+                chatWindowView.getChatView().displayMessage("Group", message.getSender(), (String)message.getContent());
+            }
+            case ANNOUNCEMENT -> {
+                chatWindowView.getChatView().displayMessage("Group", "[SERVER]", (String)message.getContent());
+            }
+            default -> {}
         }
-    }
-    
-    private List<String> parseUserList(String userListStr) {
-        String cleanListStr = userListStr.substring(1, userListStr.length() - 1);
-        if (cleanListStr.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        String[] userArray = cleanListStr.split(", ");
-        return Arrays.asList(userArray);
     }
     
     private void sendMessage() {
@@ -59,14 +49,8 @@ public class MessageController implements MessageListener {
     }
 
     private void showUserDetails() {
-        String selectedUser = chatWindowView.getUserListView().getSelectedUser();
-        if (selectedUser != null) {
-            // Remove "(You)" suffix if present
-            if (selectedUser.endsWith(" (You)")) {
-                selectedUser = selectedUser.substring(0, selectedUser.length() - 6);
-            }
-            connectionManager.sendUserDetailsRequest(selectedUser);
-        }
+        String selectedUser = chatWindowView.getUserListView().getSelectedUser();  
+        connectionManager.sendUserDetailsRequest(selectedUser);
     }
     
     private void displayUserDetails(String userId, String role, String connectionInfo) {

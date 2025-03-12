@@ -7,24 +7,35 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 
+import common.model.Message;
+import common.util.MessageFormatter;
+
 public class ConnectionManager {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
     private Thread messageListenerThread;
     private MessageListener messageListener;
+    private String userId;
     
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         validateInput(userId, serverIp, serverPort);
+        
+        this.userId = userId;
         
         socket = new Socket(serverIp, Integer.parseInt(serverPort));
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         
-        out.println(userId);  // Send the userId to the server
+        // Attempt to connect user to server
+        Message<String> joinMessage = Message.userJoin(userId);
+        out.println(MessageFormatter.format(joinMessage));
 
-        String response = in.readLine(); // Check if the userId is unique
-        if (response.equals("USERID_NOT_UNIQUE")) {
+        // Check if user ID is already in use
+        String response = in.readLine();
+        Message<?> responseMsg = MessageFormatter.parse(response);
+        
+        if (responseMsg.getType() == Message.Type.REJECT_USER_JOIN) {
             socket.close();
             throw new IllegalArgumentException("User ID already in use!");
         } else {
@@ -40,7 +51,7 @@ public class ConnectionManager {
         this.messageListener = listener;
     }
     
-    private void listenForMessages() {
+    private void listenForMessages() { // DO NOT MODIFY
         try {
             String message;
             while ((message = in.readLine()) != null) {
@@ -53,38 +64,30 @@ public class ConnectionManager {
         }
     }
     
-    private void processMessage(String message) {
-        if (message.startsWith("[USER_DETAILS]:")) {
-            if (messageListener != null) {
-                String content = message.substring("[USER_DETAILS]:".length()).trim();
-                messageListener.onMessageReceived("[USER_DETAILS]", content);
-            }
-        } else {
-            if (messageListener != null) {
-                int separatorIndex = message.indexOf(": ");
-                String sender = message.substring(0, separatorIndex);
-                String content = message.substring(separatorIndex + 2);
-                messageListener.onMessageReceived(sender, content);
-            }
-        }
+    private void processMessage(String messageString) {
+        Message<?> parsedMessage = MessageFormatter.parse(messageString);
+        messageListener.onMessageReceived(parsedMessage);
     }
 
     public void disconnect() {
         try {
-            if (socket != null) {
-                socket.close();
-            }
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void sendMessage(String message) {
-        out.println(message);
+        if (message == null) {
+            return;
+        }
+        Message<String> chatMessage = Message.sendMessage(userId, message);
+        out.println(MessageFormatter.format(chatMessage));
     }
     
     public void sendUserDetailsRequest(String userId) {
-        sendMessage("[USER_DETAILS_REQUEST]" + userId);
+        Message<String> detailsRequest = Message.requestUserDetails(userId);
+        out.println(MessageFormatter.format(detailsRequest));
     }
     
     private void validateInput(String userId, String serverIp, String serverPort) {

@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import common.model.Message;
+import common.util.MessageFormatter;
 import server.model.UserManager;
 
 public class ConnectionController {
@@ -26,33 +28,49 @@ public class ConnectionController {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            String userId = in.readLine(); // Read the userId sent by client
+            String initialMessage = in.readLine();
+            Message<?> joinMessage = MessageFormatter.parse(initialMessage);
 
-            if (userManager.userExists(userId)) {
-                out.println("USERID_NOT_UNIQUE");
-                socket.close();
+            if (joinMessage == null || joinMessage.getType() != Message.Type.USER_JOIN) {
                 return;
             }
 
-            // Create connection info string from socket
+            String userId = joinMessage.getSender();
             String connectionInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
-            
-            userManager.addUser(userId, connectionInfo, out);
-            messageController.sendSystemMessage(userId + " has joined the chat.");
+
+            if (!userManager.addUser(userId, connectionInfo, out)) {
+                Message<String> rejectMessage = Message.rejectUserJoin(userId);
+                out.println(MessageFormatter.format(rejectMessage));
+                return;
+            }
+
+            messageController.sendServerMessage(userId + " has joined the chat.");
+            messageController.sendServerUserList();
 
             try {
-                String message;
-                while ((message = in.readLine()) != null) {
-                    if (message.startsWith("[USER_DETAILS_REQUEST]")) {
-                        String requestedUserId = message.substring("[USER_DETAILS_REQUEST]".length());
-                        messageController.sendUserDetails(userId, requestedUserId);
-                    } else {
-                        messageController.sendGroupMessage(userId, message);
+                String messageStr;
+                while ((messageStr = in.readLine()) != null) {
+                    Message<?> message = MessageFormatter.parse(messageStr);
+                    
+                    if (message == null) {
+                        continue;
+                    }
+                    
+                    switch (message.getType()) {
+                        case MESSAGE -> {
+                            messageController.sendMessage(userId, (String) message.getContent());
+                        }
+                        case USER_DETAILS_REQUEST -> {
+                            String requestedUserId = (String) message.getContent();
+                            messageController.sendUserDetails(userId, requestedUserId);
+                        }
+                        default -> {}
                     }
                 }
             } finally {
-                messageController.sendSystemMessage(userId + " has left the chat.");
+                messageController.sendServerMessage(userId + " has left the chat.");
                 userManager.removeUser(userId);
+                messageController.sendServerUserList();
                 socket.close();
             }
         } catch (IOException e) {

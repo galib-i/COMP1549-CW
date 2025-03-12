@@ -17,13 +17,14 @@ public class Server {
         String ip = config.get("default.server.ip");
         int port = config.getInt("default.server.port");
 
-        System.out.println("SERVER RUNNING (" + ip + ":" + port + ")");
+        System.out.println("STARTING SERVER (" + ip + ":" + port + ")\n");
+
         try (ServerSocket serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip))) {
             while (true) {
                 connectionController.handleNewConnection(serverSocket.accept());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("ERROR STARTING SERVER (" + e.getMessage() + ")\n");
         }
     }
 }

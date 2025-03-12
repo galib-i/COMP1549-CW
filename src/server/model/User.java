@@ -31,7 +31,7 @@ public class User {
         return writer;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setCoordinator() {
+        this.role = "COORDINATOR";
     }
 }

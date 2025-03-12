@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.ConnectException;
 
 import client.model.ConnectionManager;
-import client.view.ConnectionView;
 import client.view.ChatWindowView;
+import client.view.ConnectionView;
 
 public class ConnectionController {
     private final ConnectionManager model;
@@ -22,27 +22,28 @@ public class ConnectionController {
     
     private void requestConnection() {
         ConnectionView.ConnectionDetails details = view.getConnectionDetails();
-        
+        String serverIp = details.serverIp();
+        String serverPort = details.serverPort();
+        String userId = details.userId();
+
         try {
             this.chatWindowView = new ChatWindowView();
-            chatWindowView.updateCurrentServerLabel(details.serverIp(), details.serverPort());
+            chatWindowView.updateCurrentServerLabel(serverIp, serverPort);
             chatWindowView.quitButtonAction(e -> quitConnection());
 
-            this.messageController = new MessageController(model, chatWindowView, details.userId());
+            this.messageController = new MessageController(model, chatWindowView, userId);
 
-            model.connect(details.userId(), details.serverIp(), details.serverPort());
+            model.connect(details.userId(), serverIp, serverPort);
             view.showMessage("Success", "Connected successfully!");
 
             chatWindowView.setVisible(true);
             view.dispose();
-            
-        } catch (IllegalArgumentException e) {
-            view.showMessage("Error", e.getMessage());
+
         } catch (ConnectException e) {
             view.showMessage("Error", "Connection refused!\n(Is the chat server running?)");
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             view.showMessage("Error", e.getMessage());
-        }
+        };
     }
 
     private void quitConnection() {

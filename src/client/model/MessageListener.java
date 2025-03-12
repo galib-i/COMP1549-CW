@@ -1,5 +1,7 @@
 package client.model;
 
+import common.model.Message;
+
 public interface MessageListener {
-    void onMessageReceived(String sender, String content);
+    void onMessageReceived(Message<?> message);
 }
