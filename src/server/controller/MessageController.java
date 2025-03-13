@@ -42,7 +42,7 @@ public class MessageController {
         User requester = userManager.getUserById(requesterId);
         User requestedUser = userManager.getUserById(userId);
         
-        String[] details = {requestedUser.getUserId(), requestedUser.getRole(), requestedUser.getConnectionInfo()};
+        String[] details = {requestedUser.getUserId(), requestedUser.getRole(), requestedUser.getStatus(), requestedUser.getConnectionInfo()};
         
         Message<String[]> detailsResponse = Message.userDetailsResponse(userId, details);
         String formattedMessage = MessageFormatter.format(detailsResponse);

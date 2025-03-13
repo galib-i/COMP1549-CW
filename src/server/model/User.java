@@ -5,14 +5,17 @@ import java.io.PrintWriter;
 public class User {
     private String userId;
     private String role;
+    private String status;
     private String connectionInfo;
     private PrintWriter writer;
     
     public User(String userId, String connectionInfo, PrintWriter writer) {
         this.userId = userId;
         this.role = "MEMBER";
+        this.status = "ACTIVE";
         this.connectionInfo = connectionInfo;
         this.writer = writer;
+
     }
     
     public String getUserId() {
@@ -21,6 +24,14 @@ public class User {
     
     public String getRole() {
         return role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
     
     public String getConnectionInfo() {

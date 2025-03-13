@@ -75,7 +75,7 @@ public class ConnectionController {
                 boolean isCoordinator = userManager.removeUser(userId);
                 if (isCoordinator) {
                     String newCoordinatorId = userManager.getCoordinator();
-                    messageController.sendServerMessage("The previous coordinator, " + userId + ", has left - the new coordinator is " + newCoordinatorId + ".");
+                    messageController.sendServerMessage("The previous coordinator, " + userId + ", has left - "+ newCoordinatorId + " is the current coordinator.");
                 }
 
                 messageController.sendServerUserList();

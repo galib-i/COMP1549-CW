@@ -40,8 +40,11 @@ public class UserListView extends JPanel {
 
     public void updateUserList(List<String> users, String userId) {
         // Add suffix (You) to the current user
-        Integer index = users.indexOf(userId);
-        users.set(index, userId + " (You)");
+        Integer currentUserIndex = users.indexOf(userId);
+        //Integer coordinatorIndex = users.indexOf(coordinatorId);
+
+        users.set(currentUserIndex, userId + " (You)");
+        //users.set(coordinatorIndex, coordinatorId + " 👑");
 
         SwingUtilities.invokeLater(() -> {
             usersModel.clear();

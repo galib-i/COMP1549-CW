@@ -17,9 +17,8 @@ public class ChatWindowView extends JFrame {
     private final ChatView chatView;
     private final UserListView userListView;
     private JTextField messageField;
-    private JButton sendButton;
+    private JButton sendButton, quitButton;
     private JLabel currentServerLabel;
-    private JButton quitButton;
 
     public ChatWindowView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));

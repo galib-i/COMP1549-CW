@@ -31,7 +31,7 @@ public class MessageController implements MessageListener {
             }
             case USER_DETAILS_RESPONSE -> {
                 String[] details = (String[]) message.getContent();
-                displayUserDetails(details[0], details[1], details[2]);
+                displayUserDetails(details[0], details[1], details[2], details[3]);
             }
             case MESSAGE -> {
                 chatWindowView.getChatView().displayMessage("Group", message.getSender(), (String)message.getContent());
@@ -53,11 +53,12 @@ public class MessageController implements MessageListener {
         connectionManager.sendUserDetailsRequest(selectedUser);
     }
     
-    private void displayUserDetails(String userId, String role, String connectionInfo) {
+    private void displayUserDetails(String userId, String role, String status, String connectionInfo) {
         chatWindowView.getUserListView().showMessage(
             userId + "'s details", 
             "User ID: " + userId + "\n" +
             "Role: " + role + "\n" +
+            "Status: " + status + "\n" +
             "Connected through: " + connectionInfo
         );
     }
