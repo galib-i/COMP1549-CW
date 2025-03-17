@@ -12,6 +12,7 @@ public class MessageController implements MessageListener {
     private final ConnectionManager connectionManager;
     private final ChatWindowView chatWindowView;
     private final String userId;
+    private String coordinatorId = "";
     private ActivityTracker activityTracker;
     
     public MessageController(ConnectionManager connectionManager, ChatWindowView chatWindowView, String userId) {
@@ -31,7 +32,8 @@ public class MessageController implements MessageListener {
         switch (message.getType()) {
             case USER_LIST -> {
                 String[] users = (String[]) message.getContent();
-                chatWindowView.getUserListView().updateUserList(Arrays.asList(users), userId);
+                coordinatorId = users[0];
+                chatWindowView.getUserListView().updateUserList(Arrays.asList(users), userId, coordinatorId);
             }
             case USER_DETAILS_RESPONSE -> {
                 String[] details = (String[]) message.getContent();

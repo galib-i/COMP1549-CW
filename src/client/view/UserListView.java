@@ -38,11 +38,17 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void updateUserList(List<String> users, String userId) {
+    public void updateUserList(List<String> users, String userId, String coordinatorId) {
         // Add suffix (You) to the current user
         Integer currentUserIndex = users.indexOf(userId);
+        Integer coordinatorIndex = users.indexOf(coordinatorId);
 
+        if (userId.equals(coordinatorId)) { 
+            users.set(coordinatorIndex, coordinatorId + " (You) 👑");
+        } else {
             users.set(currentUserIndex, userId + " (You)");
+            users.set(coordinatorIndex, coordinatorId + " 👑");
+        }
 
         SwingUtilities.invokeLater(() -> {
             usersModel.clear();
@@ -84,7 +90,8 @@ public class UserListView extends JPanel {
     }
 
     public String getSelectedUser() {
-        return usersList.getSelectedValue();
+        String selectedUser = usersList.getSelectedValue();
+        return selectedUser.split(" ")[0]; // Remove any suffixes
     }
 
     public void showMessage(String title, String message) {
