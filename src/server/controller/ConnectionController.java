@@ -36,28 +36,24 @@ public class ConnectionController {
             }
 
             String userId = joinMessage.getSender();
-            String connectionInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            String socketAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
-            if (!userManager.addUser(userId, connectionInfo, out)) {
+            if (!userManager.addUser(userId, socketAddress, out)) {
                 Message<String> rejectMessage = Message.rejectUserJoin(userId);
                 out.println(MessageFormatter.format(rejectMessage));
                 return;
             }
 
-            messageController.sendServerMessage(userId + " has joined the chat.");
+            messageController.sendAnnouncement(userId + " has joined the chat.");
             messageController.sendServerUserList();
 
-            String coordinatorId = userManager.getCoordinator();
+            String coordinatorId = userManager.getCoordinatorId();
             messageController.sendUserNotification(userId, coordinatorId + " is the current coordinator.");
 
             try {
                 String messageStr;
                 while ((messageStr = in.readLine()) != null) {
                     Message<?> message = MessageFormatter.parse(messageStr);
-                    
-                    if (message == null) {
-                        continue;
-                    }
                     
                     switch (message.getType()) {
                         case MESSAGE -> {
@@ -67,15 +63,23 @@ public class ConnectionController {
                             String requestedUserId = (String) message.getContent();
                             messageController.sendUserDetails(userId, requestedUserId);
                         }
+                        case STATUS_UPDATE -> {
+                            String newStatus = (String) message.getContent();
+                            userManager.updateUserStatus(userId, newStatus);
+                            messageController.sendServerUserList(); // Update all clients
+                        }
                         default -> {}
                     }
                 }
             } finally {
-                messageController.sendServerMessage(userId + " has left the chat.");
-                boolean isCoordinator = userManager.removeUser(userId);
+                boolean isCoordinator = userManager.getCoordinatorId().equals(userId);
+                userManager.removeUser(userId);
+
                 if (isCoordinator) {
-                    String newCoordinatorId = userManager.getCoordinator();
-                    messageController.sendServerMessage("The previous coordinator, " + userId + ", has left - "+ newCoordinatorId + " is the current coordinator.");
+                    messageController.sendAnnouncement("The old coordinator, " + userId + ", has left the chat.");
+                    messageController.sendAnnouncement(userManager.getCoordinatorId() + " is the new coordinator.");
+                } else {
+                    messageController.sendAnnouncement(userId + " has left the chat.");
                 }
 
                 messageController.sendServerUserList();

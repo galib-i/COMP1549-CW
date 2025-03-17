@@ -2,6 +2,7 @@ package client.controller;
 
 import java.util.Arrays;
 
+import client.model.ActivityTracker;
 import client.model.ConnectionManager;
 import client.model.MessageListener;
 import client.view.ChatWindowView;
@@ -11,14 +12,17 @@ public class MessageController implements MessageListener {
     private final ConnectionManager connectionManager;
     private final ChatWindowView chatWindowView;
     private final String userId;
+    private ActivityTracker activityTracker;
     
     public MessageController(ConnectionManager connectionManager, ChatWindowView chatWindowView, String userId) {
         this.connectionManager = connectionManager;
         this.chatWindowView = chatWindowView;
         this.userId = userId;
 
-        chatWindowView.sendButtonAction(e -> sendMessage());
+        this.activityTracker = new ActivityTracker(connectionManager, chatWindowView);
+        
         chatWindowView.getUserListView().viewDetailsAction(e -> showUserDetails());
+        chatWindowView.sendButtonAction(e -> sendMessage());
         connectionManager.setMessageListener(this);
     }
     
@@ -53,13 +57,13 @@ public class MessageController implements MessageListener {
         connectionManager.sendUserDetailsRequest(selectedUser);
     }
     
-    private void displayUserDetails(String userId, String role, String status, String connectionInfo) {
+    private void displayUserDetails(String userId, String role, String status, String socketAddress) {
         chatWindowView.getUserListView().showMessage(
             userId + "'s details", 
             "User ID: " + userId + "\n" +
             "Role: " + role + "\n" +
             "Status: " + status + "\n" +
-            "Connected through: " + connectionInfo
+            "Connected through: " + socketAddress
         );
     }
 }

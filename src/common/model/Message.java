@@ -10,6 +10,7 @@ public class Message<T> {
         USER_LIST,
         USER_DETAILS_REQUEST,
         USER_DETAILS_RESPONSE,
+        STATUS_UPDATE,
     }
 
     private final Type type;
@@ -64,5 +65,9 @@ public class Message<T> {
     
     public static Message<String[]> userDetailsResponse(String userId, String[] details) {
         return new Message<>(Type.USER_DETAILS_RESPONSE, userId, details);
+    }
+    
+    public static Message<String> statusUpdate(String userId, String status) {
+        return new Message<>(Type.STATUS_UPDATE, userId, status);
     }
 }

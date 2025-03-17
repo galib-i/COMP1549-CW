@@ -7,57 +7,56 @@ import java.util.Map;
 
 public class UserManager {
     private final Map<String, User> connectedUsers;
+    private String coordinatorId;
 
     public UserManager() {
-        this.connectedUsers = new LinkedHashMap<>(); // Sorted by insertion order
+        this.connectedUsers = new LinkedHashMap<>(); // Keeps insertion order
+        this.coordinatorId = null;
     }
 
-    public boolean addUser(String userId, String connectionInfo, PrintWriter writer) {
+    public boolean addUser(String userId, String socketAddress, PrintWriter writer) {
         if (connectedUsers.containsKey(userId)) {
             return false;
         }
 
-        User user = new User(userId, connectionInfo, writer);
+        User user = new User(userId, socketAddress, writer);
         if (connectedUsers.isEmpty()) { // Sets the first user as the coordinator
             user.setCoordinator();
+            coordinatorId = userId;
         }
 
         connectedUsers.put(userId, user);
         return true;
     }
 
-    public boolean removeUser(String userId) {
-        boolean isCoordinator = userId.equals(getCoordinator());
+    public void removeUser(String userId) {
         connectedUsers.remove(userId);
     
-        if (isCoordinator && !connectedUsers.isEmpty()) { // Reassigns coordinator role if the current one leaves
+        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) { // Reassigns coordinator role to the next user
             User newCoordinator = connectedUsers.entrySet().iterator().next().getValue();
             newCoordinator.setCoordinator();
-            return true;
+            coordinatorId = newCoordinator.getUserId();
         }
-
-        return false;
     }
         
     public Collection<User> getUsers() {
         return connectedUsers.values();
     }
-    
+
     public String[] getUserIds() {
         return connectedUsers.keySet().toArray(new String[0]);
     }
 
-    public User getUserById(String userId) {
+    public User getUser(String userId) {
         return connectedUsers.get(userId);
     }
 
-    public String getCoordinator() {
-        for (User user : connectedUsers.values()) {
-            if (user.getRole().equals("COORDINATOR")) {
-                return user.getUserId();
-            }
-        }
-
-        return null;
+    public String getCoordinatorId() {
+        return coordinatorId;
+    }
+    
+    public void updateUserStatus(String userId, String status) {
+        User user = connectedUsers.get(userId);
+        user.setStatus(status);
     }
 }

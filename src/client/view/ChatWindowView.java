@@ -56,6 +56,7 @@ public class ChatWindowView extends JFrame {
         exitWindowAction(); // x button mimics quit button click
     }
 
+
     private void exitWindowAction() {
         addWindowListener(new WindowAdapter() {
             @Override
@@ -84,7 +85,6 @@ public class ChatWindowView extends JFrame {
         if (message.trim().isEmpty()) {  // Ignore empty messages
             return null;
         }
-
         return message;
     }
 

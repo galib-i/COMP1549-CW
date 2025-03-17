@@ -6,14 +6,14 @@ public class User {
     private String userId;
     private String role;
     private String status;
-    private String connectionInfo;
+    private String socketAddress;
     private PrintWriter writer;
     
-    public User(String userId, String connectionInfo, PrintWriter writer) {
+    public User(String userId, String socketAddress, PrintWriter writer) {
         this.userId = userId;
         this.role = "MEMBER";
         this.status = "ACTIVE";
-        this.connectionInfo = connectionInfo;
+        this.socketAddress = socketAddress;
         this.writer = writer;
 
     }
@@ -34,8 +34,8 @@ public class User {
         this.status = status;
     }
     
-    public String getConnectionInfo() {
-        return connectionInfo;
+    public String getSocketAddress() {
+        return socketAddress;
     }
     
     public PrintWriter getWriter() {
