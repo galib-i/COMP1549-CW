@@ -3,6 +3,8 @@ package client.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -28,7 +30,9 @@ public class ChatView extends JPanel {
 
     public void displayMessage(String chatName, String sender, String message) {
         ChatPanel chatPanel = chats.get(chatName);
-        chatPanel.chatArea.append(sender + ": " + message + "\n");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String timestamp = sdf.format(new Date());
+        chatPanel.chatArea.append("[" + timestamp + "] " + sender + ": " + message + "\n");
     }
 
     private static class ChatPanel extends JPanel {
