@@ -22,9 +22,9 @@ public class ConnectionController {
     
     private void requestConnection() {
         ConnectionView.ConnectionDetails details = view.getConnectionDetails();
+        String userId = details.userId();
         String serverIp = details.serverIp();
         String serverPort = details.serverPort();
-        String userId = details.userId();
 
         try {
             this.chatWindowView = new ChatWindowView();
@@ -33,7 +33,7 @@ public class ConnectionController {
 
             this.messageController = new MessageController(model, chatWindowView, userId);
 
-            model.connect(details.userId(), serverIp, serverPort);
+            model.connect(userId, serverIp, serverPort);
 
             chatWindowView.setVisible(true);
             view.dispose();
