@@ -14,11 +14,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class ConnectionView extends JFrame {
+public class LoginView extends JFrame {
     private JTextField userIdField, serverIpField, serverPortField;
     private JButton connectButton;
 
-    public ConnectionView() {
+    public LoginView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32)); // Add padding
         JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
