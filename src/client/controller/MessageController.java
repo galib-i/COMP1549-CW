@@ -37,10 +37,10 @@ public class MessageController implements MessageListener {
                 displayUserDetails(details[0], details[1], details[2], details[3]);
             }
             case MESSAGE -> {
-                view.getChatView().displayMessage("Group", message.getSender(), (String)message.getContent());
+                view.getChatView().displayMessage("Group", message.getTimestamp(), message.getSender(), (String)message.getContent());
             }
             case ANNOUNCEMENT, USER_NOTIFICATION -> {
-                view.getChatView().displayMessage("Group", "[SERVER]", (String)message.getContent());
+                view.getChatView().displayMessage("Group", message.getTimestamp(), "[SERVER]", (String)message.getContent());
             }
             default -> {}
         }

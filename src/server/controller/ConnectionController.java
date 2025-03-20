@@ -40,7 +40,7 @@ public class ConnectionController {
             String socketAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
             if (userManager.getUser(userId) != null) { // Only allow unique userIds
-                Message rejectMessage = Message.rejectUserJoin(userId);
+                Message rejectMessage = Message.rejectJoin(userId);
                 writer.println(MessageFormatter.format(rejectMessage));
                 return;
             }

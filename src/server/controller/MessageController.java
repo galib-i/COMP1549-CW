@@ -26,15 +26,15 @@ public class MessageController {
     }
 
     public void sendAnnouncement(String content) {
-        Message announcement = Message.announcement(content);
-        String formattedMessage = MessageFormatter.format(announcement);
+        Message sendAnnouncement = Message.sendAnnouncement(content);
+        String formattedMessage = MessageFormatter.format(sendAnnouncement);
         
         broadcastMessage(formattedMessage);
     }
 
     public void sendUserNotification(String targetId, String content) {
         User targetUser = userManager.getUser(targetId);
-        Message notification = Message.userNotification(content);
+        Message notification = Message.notifyUser(content);
         String formattedMessage = MessageFormatter.format(notification);
 
         targetUser.getWriter().println(formattedMessage);
@@ -57,7 +57,7 @@ public class MessageController {
 
     public void sendServerUserList() {
         String[] userArray = userManager.getUserList();
-        Message userListMessage = Message.userList(userArray);
+        Message userListMessage = Message.sendUserList(userArray);
         String formattedMessage = MessageFormatter.format(userListMessage);
         
         broadcastMessage(formattedMessage);

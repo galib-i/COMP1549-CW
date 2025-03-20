@@ -28,7 +28,7 @@ public class ConnectionManager {
         writer = new PrintWriter(socket.getOutputStream(), true);
         
         // Attempt to connect user to server
-        Message joinMessage = Message.userJoin(userId);
+        Message joinMessage = Message.requestJoin(userId);
         writer.println(MessageFormatter.format(joinMessage));
 
         // Check if user ID is already in use
@@ -89,13 +89,13 @@ public class ConnectionManager {
         writer.println(MessageFormatter.format(chatMessage));
     }
     
-    public void sendUserDetailsRequest(String userId) {
-        Message detailsRequest = Message.requestUserDetails(userId);
+    public void sendUserDetailsRequest(String targetUserId) {
+        Message detailsRequest = Message.requestUserDetails(targetUserId);
         writer.println(MessageFormatter.format(detailsRequest));
     }
     
     public void toggleStatus() {        
-        Message statusMessage = Message.statusUpdate(userId);
+        Message statusMessage = Message.updateStatus(userId);
         writer.println(MessageFormatter.format(statusMessage));
     }
     
