@@ -12,8 +12,8 @@ import common.util.MessageFormatter;
 
 public class ConnectionManager {
     private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private BufferedReader reader;
+    private PrintWriter writer;
     private Thread messageListenerThread;
     private MessageListener messageListener;
     private String userId;
@@ -24,15 +24,15 @@ public class ConnectionManager {
         this.userId = userId;
         
         socket = new Socket(serverIp, Integer.parseInt(serverPort));
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(socket.getOutputStream(), true);
         
         // Attempt to connect user to server
         Message<String> joinMessage = Message.userJoin(userId);
-        out.println(MessageFormatter.format(joinMessage));
+        writer.println(MessageFormatter.format(joinMessage));
 
         // Check if user ID is already in use
-        String response = in.readLine();
+        String response = reader.readLine();
         Message<?> responseMsg = MessageFormatter.parse(response);
         
         if (responseMsg.getType() == Message.Type.REJECT_USER_JOIN) {
@@ -54,7 +54,7 @@ public class ConnectionManager {
     private void listenForMessages() { // DO NOT MODIFY
         try {
             String message;
-            while ((message = in.readLine()) != null) {
+            while ((message = reader.readLine()) != null) {
                 processMessage(message);
             }
         } catch (IOException e) {
@@ -86,17 +86,17 @@ public class ConnectionManager {
             return;
         }
         Message<String> chatMessage = Message.sendMessage(userId, message);
-        out.println(MessageFormatter.format(chatMessage));
+        writer.println(MessageFormatter.format(chatMessage));
     }
     
     public void sendUserDetailsRequest(String userId) {
         Message<String> detailsRequest = Message.requestUserDetails(userId);
-        out.println(MessageFormatter.format(detailsRequest));
+        writer.println(MessageFormatter.format(detailsRequest));
     }
     
     public void toggleStatus() {        
         Message<String> statusMessage = Message.statusUpdate(userId, null);
-        out.println(MessageFormatter.format(statusMessage));
+        writer.println(MessageFormatter.format(statusMessage));
     }
     
     private void validateInput(String userId, String serverIp, String serverPort) {

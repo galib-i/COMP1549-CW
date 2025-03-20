@@ -1,6 +1,5 @@
 package server.model;
 
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,37 +13,22 @@ public class UserManager {
         this.coordinatorId = null;
     }
 
-    public boolean addUser(String userId, String socketAddress, PrintWriter writer) {
-        if (connectedUsers.containsKey(userId)) {
-            return false;
-        }
+    public void addUser(User user) {
+        connectedUsers.put(user.getUserId(), user);
 
-        User user = new User(userId, socketAddress, writer);
-        if (connectedUsers.isEmpty()) { // Sets the first user as the coordinator
+        if (coordinatorId == null) { // First user is the coordinator
+            coordinatorId = user.getUserId();
             user.toCoordinator();
-            coordinatorId = userId;
         }
-
-        connectedUsers.put(userId, user);
-        return true;
     }
 
     public void removeUser(String userId) {
         connectedUsers.remove(userId);
-    
-        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) { // Reassigns coordinator role to the next user
-            User newCoordinator = connectedUsers.entrySet().iterator().next().getValue();
-            newCoordinator.toCoordinator();
-            coordinatorId = newCoordinator.getUserId();
-        }
-    }
-        
-    public Collection<User> getUsers() {
-        return connectedUsers.values();
-    }
 
-    public String[] getUserIds() {
-        return connectedUsers.keySet().toArray(new String[0]);
+        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) { // Reassign coordinator role if previous one leaves
+            coordinatorId = connectedUsers.keySet().iterator().next();
+            connectedUsers.get(coordinatorId).toCoordinator();
+        }
     }
 
     public User getUser(String userId) {
@@ -53,6 +37,14 @@ public class UserManager {
 
     public String getCoordinatorId() {
         return coordinatorId;
+    }
+
+    public Collection<User> getUsers() {
+        return connectedUsers.values();
+    }
+
+    public String[] getUserIds() {
+        return connectedUsers.keySet().toArray(new String[0]);
     }
     
     public void toggleUserStatus(String userId) {

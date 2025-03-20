@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import common.model.Message;
 import common.util.MessageFormatter;
+import server.model.User;
 import server.model.UserManager;
 
 public class ConnectionController {
@@ -25,10 +26,10 @@ public class ConnectionController {
 
     private void processConnection(Socket socket) {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-            String initialMessage = in.readLine();
+            String initialMessage = reader.readLine();
             Message<?> joinMessage = MessageFormatter.parse(initialMessage);
 
             if (joinMessage == null || joinMessage.getType() != Message.Type.USER_JOIN) {
@@ -38,11 +39,13 @@ public class ConnectionController {
             String userId = joinMessage.getSender();
             String socketAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
-            if (!userManager.addUser(userId, socketAddress, out)) {
+            if (userManager.getUser(userId) != null) { // Only allow unique userIds
                 Message<String> rejectMessage = Message.rejectUserJoin(userId);
-                out.println(MessageFormatter.format(rejectMessage));
+                writer.println(MessageFormatter.format(rejectMessage));
                 return;
             }
+
+            userManager.addUser(new User(userId, socketAddress, writer));
 
             messageController.sendAnnouncement(userId + " has joined the chat.");
             messageController.sendServerUserList();
@@ -52,7 +55,7 @@ public class ConnectionController {
 
             try {
                 String messageStr;
-                while ((messageStr = in.readLine()) != null) {
+                while ((messageStr = reader.readLine()) != null) {
                     Message<?> message = MessageFormatter.parse(messageStr);
                     
                     switch (message.getType()) {
