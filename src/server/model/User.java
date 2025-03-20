@@ -3,16 +3,24 @@ package server.model;
 import java.io.PrintWriter;
 
 public class User {
+    public enum Role {
+        MEMBER, COORDINATOR
+    }
+
+    public enum Status {
+        ACTIVE, INACTIVE
+    }
+
     private String userId;
-    private String role;
-    private String status;
+    private Role role;
+    private Status status;
     private String socketAddress;
     private PrintWriter writer;
     
     public User(String userId, String socketAddress, PrintWriter writer) {
         this.userId = userId;
-        this.role = "MEMBER";
-        this.status = "ACTIVE";
+        this.role = Role.MEMBER;
+        this.status = Status.ACTIVE;
         this.socketAddress = socketAddress;
         this.writer = writer;
 
@@ -22,16 +30,24 @@ public class User {
         return userId;
     }
     
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public String getStatus() {
+    public void toCoordinator() {
+        this.role = Role.COORDINATOR;
+    }
+
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void toggleStatus() {
+        if (status == Status.ACTIVE) {
+            status = Status.INACTIVE;
+        } else {
+            status = Status.ACTIVE;
+        }
     }
     
     public String getSocketAddress() {
@@ -40,9 +56,5 @@ public class User {
     
     public PrintWriter getWriter() {
         return writer;
-    }
-    
-    public void setCoordinator() {
-        this.role = "COORDINATOR";
     }
 }

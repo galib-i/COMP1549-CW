@@ -64,8 +64,7 @@ public class ConnectionController {
                             messageController.sendUserDetails(userId, requestedUserId);
                         }
                         case STATUS_UPDATE -> {
-                            String newStatus = (String) message.getContent();
-                            userManager.updateUserStatus(userId, newStatus);
+                            userManager.toggleUserStatus(userId);
                             messageController.sendServerUserList(); // Update all clients
                         }
                         default -> {}

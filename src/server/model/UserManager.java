@@ -21,7 +21,7 @@ public class UserManager {
 
         User user = new User(userId, socketAddress, writer);
         if (connectedUsers.isEmpty()) { // Sets the first user as the coordinator
-            user.setCoordinator();
+            user.toCoordinator();
             coordinatorId = userId;
         }
 
@@ -34,7 +34,7 @@ public class UserManager {
     
         if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) { // Reassigns coordinator role to the next user
             User newCoordinator = connectedUsers.entrySet().iterator().next().getValue();
-            newCoordinator.setCoordinator();
+            newCoordinator.toCoordinator();
             coordinatorId = newCoordinator.getUserId();
         }
     }
@@ -55,8 +55,8 @@ public class UserManager {
         return coordinatorId;
     }
     
-    public void updateUserStatus(String userId, String status) {
+    public void toggleUserStatus(String userId) {
         User user = connectedUsers.get(userId);
-        user.setStatus(status);
+        user.toggleStatus();
     }
 }

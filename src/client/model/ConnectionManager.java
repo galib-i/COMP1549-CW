@@ -17,7 +17,6 @@ public class ConnectionManager {
     private Thread messageListenerThread;
     private MessageListener messageListener;
     private String userId;
-    private String currentStatus = "ACTIVE";
     
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         validateInput(userId, serverIp, serverPort);
@@ -95,13 +94,8 @@ public class ConnectionManager {
         out.println(MessageFormatter.format(detailsRequest));
     }
     
-    public void sendStatusUpdate(String status) {
-        if (status.equals(currentStatus)) {
-            return;
-        }
-        
-        currentStatus = status;
-        Message<String> statusMessage = Message.statusUpdate(userId, status);
+    public void toggleStatus() {        
+        Message<String> statusMessage = Message.statusUpdate(userId, null);
         out.println(MessageFormatter.format(statusMessage));
     }
     

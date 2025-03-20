@@ -48,7 +48,7 @@ public class MessageController {
             return;
         }
 
-        String[] details = {targetUser.getUserId(), targetUser.getRole(), targetUser.getStatus(), targetUser.getSocketAddress()};
+        String[] details = {targetUser.getUserId(), targetUser.getRole().toString(), targetUser.getStatus().toString(), targetUser.getSocketAddress()};
         Message<String[]> detailsResponse = Message.userDetailsResponse(targetId, details);
         String formattedMessage = MessageFormatter.format(detailsResponse);
 

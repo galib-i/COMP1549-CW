@@ -38,7 +38,7 @@ public class ActivityTracker {
         inactivityTimer = new Timer(INACTIVITY_TIMEOUT, e -> {
             if (isActive) {
                 isActive = false;
-                connectionManager.sendStatusUpdate("INACTIVE");
+                connectionManager.toggleStatus();
             }
         });
 
@@ -52,7 +52,7 @@ public class ActivityTracker {
         startInactivityTimer(); // Reset timer
 
         if (wasInactive) {
-            connectionManager.sendStatusUpdate("ACTIVE");
+            connectionManager.toggleStatus();
         }
     }
     

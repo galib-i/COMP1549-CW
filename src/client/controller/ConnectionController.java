@@ -19,12 +19,9 @@ public class ConnectionController {
     
     private void requestConnection() {
         LoginView.ConnectionDetails details = view.getConnectionDetails();
-        String userId = details.userId();
-        String serverIp = details.serverIp();
-        String serverPort = details.serverPort();
 
         try {
-            clientController.loadChatWindow(userId, serverIp, serverPort);
+            clientController.loadChatWindow(details.userId(), details.serverIp(), details.serverPort());
         } catch (ConnectException e) {
             view.showMessage("Error", "Connection refused!\n(Is the chat server running?)");
         } catch (IllegalArgumentException | IOException e) {
