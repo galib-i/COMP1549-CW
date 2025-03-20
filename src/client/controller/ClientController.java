@@ -9,9 +9,7 @@ import client.view.LoginView;
 public class ClientController {
     private final ConnectionManager connectionManager;
     private LoginView loginView;
-    private ConnectionController connectionController;
     private ChatWindowView chatWindowView;
-    private MessageController messageController;
     
     public ClientController() {
         this.connectionManager = new ConnectionManager();
@@ -19,7 +17,7 @@ public class ClientController {
     
     public void loadLogin() {
         loginView = new LoginView();
-        connectionController = new ConnectionController(connectionManager, loginView, this);
+        new ConnectionController(connectionManager, loginView, this);
         loginView.setVisible(true);
     }
     
@@ -28,7 +26,7 @@ public class ClientController {
         chatWindowView.updateCurrentServerLabel(serverIp, serverPort);
         chatWindowView.quitButtonAction(e -> quitClient());
         
-        messageController = new MessageController(connectionManager, chatWindowView);
+        new MessageController(connectionManager, chatWindowView);
         connectionManager.connect(userId, serverIp, serverPort);
 
         chatWindowView.setVisible(true);

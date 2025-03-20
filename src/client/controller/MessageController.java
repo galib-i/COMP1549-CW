@@ -12,13 +12,12 @@ public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
     private String coordinatorId = "";
-    private ActivityTracker activityTracker;
     
     public MessageController(ConnectionManager model, ChatWindowView view) {
         this.model = model;
         this.view = view;
 
-        this.activityTracker = new ActivityTracker(model, view);
+        new ActivityTracker(model, view);
         
         view.getUserListView().viewDetailsAction(e -> showUserDetails());
         view.sendButtonAction(e -> sendMessage());

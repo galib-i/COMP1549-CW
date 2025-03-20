@@ -7,12 +7,10 @@ import client.model.ConnectionManager;
 import client.view.LoginView;
 
 public class ConnectionController {
-    private final ConnectionManager model;
     private final LoginView view;
     private final ClientController clientController;
     
     public ConnectionController(ConnectionManager model, LoginView view, ClientController clientController) {
-        this.model = model;
         this.view = view;
         this.clientController = clientController;
         
