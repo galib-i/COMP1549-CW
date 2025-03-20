@@ -78,6 +78,10 @@ public class ConnectionManager {
         }
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public void sendMessage(String message) {
         if (message == null) {
             return;

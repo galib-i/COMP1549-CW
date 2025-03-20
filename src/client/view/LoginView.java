@@ -14,11 +14,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import common.util.ConfigLoader;
+
 public class LoginView extends JFrame {
     private JTextField userIdField, serverIpField, serverPortField;
     private JButton connectButton;
 
     public LoginView() {
+        ConfigLoader config = new ConfigLoader(); // Load defaults as placeholders, mostly for demo purposes
+        String defaultIp = config.get("default.server.ip");
+        String defaultPort = String.valueOf(config.getInt("default.server.port"));
+
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32)); // Add padding
         JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
@@ -32,8 +38,8 @@ public class LoginView extends JFrame {
 
         serverIpField = new JTextField();
         serverPortField = new JTextField();
-        JPanel serverIpPanel = createLabelledField("IP:", "localhost", serverIpField);
-        JPanel serverPortPanel = createLabelledField("Port:", "1549", serverPortField);
+        JPanel serverIpPanel = createLabelledField("IP:", defaultIp, serverIpField);
+        JPanel serverPortPanel = createLabelledField("Port:", defaultPort, serverPortField);
         serverDetailsPanel.add(serverIpPanel, BorderLayout.NORTH);
         serverDetailsPanel.add(serverPortPanel, BorderLayout.CENTER);
         mainPanel.add(serverDetailsPanel, BorderLayout.CENTER);

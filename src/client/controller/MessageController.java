@@ -11,14 +11,12 @@ import common.model.Message;
 public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
-    private final String userId;
     private String coordinatorId = "";
     private ActivityTracker activityTracker;
     
-    public MessageController(ConnectionManager model, ChatWindowView view, String userId) {
+    public MessageController(ConnectionManager model, ChatWindowView view) {
         this.model = model;
         this.view = view;
-        this.userId = userId;
 
         this.activityTracker = new ActivityTracker(model, view);
         
@@ -33,7 +31,7 @@ public class MessageController implements MessageListener {
             case USER_LIST -> {
                 String[] users = (String[]) message.getContent();
                 coordinatorId = users[0];
-                view.getUserListView().updateUserList(Arrays.asList(users), userId, coordinatorId);
+                view.getUserListView().updateUserList(Arrays.asList(users), model.getUserId(), coordinatorId);
             }
             case USER_DETAILS_RESPONSE -> {
                 String[] details = (String[]) message.getContent();

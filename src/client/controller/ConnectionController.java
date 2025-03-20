@@ -26,9 +26,7 @@ public class ConnectionController {
         String serverPort = details.serverPort();
 
         try {
-            model.connect(userId, serverIp, serverPort);
             clientController.loadChatWindow(userId, serverIp, serverPort);
-
         } catch (ConnectException e) {
             view.showMessage("Error", "Connection refused!\n(Is the chat server running?)");
         } catch (IllegalArgumentException | IOException e) {
