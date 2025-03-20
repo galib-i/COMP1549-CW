@@ -19,14 +19,14 @@ public class MessageController {
     } 
 
     public void sendMessage(String senderId, String content) {
-        Message<String> message = Message.sendMessage(senderId, content);
+        Message message = Message.sendMessage(senderId, content);
         String formattedMessage = MessageFormatter.format(message);
         
         broadcastMessage(formattedMessage);
     }
 
     public void sendAnnouncement(String content) {
-        Message<String> announcement = Message.announcement(content);
+        Message announcement = Message.announcement(content);
         String formattedMessage = MessageFormatter.format(announcement);
         
         broadcastMessage(formattedMessage);
@@ -34,7 +34,7 @@ public class MessageController {
 
     public void sendUserNotification(String targetId, String content) {
         User targetUser = userManager.getUser(targetId);
-        Message<String> notification = Message.userNotification(content);
+        Message notification = Message.userNotification(content);
         String formattedMessage = MessageFormatter.format(notification);
 
         targetUser.getWriter().println(formattedMessage);
@@ -49,15 +49,15 @@ public class MessageController {
         }
 
         String[] details = {targetUser.getUserId(), targetUser.getRole().toString(), targetUser.getStatus().toString(), targetUser.getSocketAddress()};
-        Message<String[]> detailsResponse = Message.userDetailsResponse(targetId, details);
+        Message detailsResponse = Message.userDetailsResponse(targetId, details);
         String formattedMessage = MessageFormatter.format(detailsResponse);
 
         requester.getWriter().println(formattedMessage);
     }
 
     public void sendServerUserList() {
-        String[] userArray = userManager.getUserIds();
-        Message<String[]> userListMessage = Message.userList(userArray);
+        String[] userArray = userManager.getUserList();
+        Message userListMessage = Message.userList(userArray);
         String formattedMessage = MessageFormatter.format(userListMessage);
         
         broadcastMessage(formattedMessage);

@@ -28,12 +28,12 @@ public class ConnectionManager {
         writer = new PrintWriter(socket.getOutputStream(), true);
         
         // Attempt to connect user to server
-        Message<String> joinMessage = Message.userJoin(userId);
+        Message joinMessage = Message.userJoin(userId);
         writer.println(MessageFormatter.format(joinMessage));
 
         // Check if user ID is already in use
         String response = reader.readLine();
-        Message<?> responseMsg = MessageFormatter.parse(response);
+        Message responseMsg = MessageFormatter.parse(response);
         
         if (responseMsg.getType() == Message.Type.REJECT_USER_JOIN) {
             socket.close();
@@ -65,7 +65,7 @@ public class ConnectionManager {
     }
     
     private void processMessage(String messageString) {
-        Message<?> parsedMessage = MessageFormatter.parse(messageString);
+        Message parsedMessage = MessageFormatter.parse(messageString);
         messageListener.onMessageReceived(parsedMessage);
     }
 
@@ -85,17 +85,17 @@ public class ConnectionManager {
         if (message == null) {
             return;
         }
-        Message<String> chatMessage = Message.sendMessage(userId, message);
+        Message chatMessage = Message.sendMessage(userId, message);
         writer.println(MessageFormatter.format(chatMessage));
     }
     
     public void sendUserDetailsRequest(String userId) {
-        Message<String> detailsRequest = Message.requestUserDetails(userId);
+        Message detailsRequest = Message.requestUserDetails(userId);
         writer.println(MessageFormatter.format(detailsRequest));
     }
     
     public void toggleStatus() {        
-        Message<String> statusMessage = Message.statusUpdate(userId, null);
+        Message statusMessage = Message.statusUpdate(userId);
         writer.println(MessageFormatter.format(statusMessage));
     }
     

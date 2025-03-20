@@ -43,7 +43,7 @@ public class UserManager {
         return connectedUsers.values();
     }
 
-    public String[] getUserIds() {
+    public String[] getUserList() {
         return connectedUsers.keySet().toArray(new String[0]);
     }
     

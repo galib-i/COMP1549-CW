@@ -30,7 +30,7 @@ public class ConnectionController {
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
             String initialMessage = reader.readLine();
-            Message<?> joinMessage = MessageFormatter.parse(initialMessage);
+            Message joinMessage = MessageFormatter.parse(initialMessage);
 
             if (joinMessage == null || joinMessage.getType() != Message.Type.USER_JOIN) {
                 return;
@@ -40,7 +40,7 @@ public class ConnectionController {
             String socketAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
             if (userManager.getUser(userId) != null) { // Only allow unique userIds
-                Message<String> rejectMessage = Message.rejectUserJoin(userId);
+                Message rejectMessage = Message.rejectUserJoin(userId);
                 writer.println(MessageFormatter.format(rejectMessage));
                 return;
             }
@@ -56,7 +56,7 @@ public class ConnectionController {
             try {
                 String messageStr;
                 while ((messageStr = reader.readLine()) != null) {
-                    Message<?> message = MessageFormatter.parse(messageStr);
+                    Message message = MessageFormatter.parse(messageStr);
                     
                     switch (message.getType()) {
                         case MESSAGE -> {

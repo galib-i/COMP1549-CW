@@ -25,7 +25,7 @@ public class MessageController implements MessageListener {
     }
     
     @Override
-    public void onMessageReceived(Message<?> message) {
+    public void onMessageReceived(Message message) {
         switch (message.getType()) {
             case USER_LIST -> {
                 String[] users = (String[]) message.getContent();
