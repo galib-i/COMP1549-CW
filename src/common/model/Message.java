@@ -2,6 +2,7 @@ package common.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class Message {
     public enum Type {
@@ -19,9 +20,10 @@ public class Message {
     private static final String SERVER = "SERVER";
     private static final String CLIENT = "CLIENT";
     private final Type type;
+    private final String timestamp;
     private final String sender;
     private final Object content;
-    private final String timestamp;
+
 
     public Message(Type type, String sender, Object content) {
         this.type = type;
@@ -74,11 +76,11 @@ public class Message {
         return new Message(Type.USER_DETAILS_REQUEST, CLIENT, targetUserId);
     }
     
-    public static Message sendUserList(String[] userList) {
+    public static Message sendUserList(Map<String, Map<String, String>> userList) {
         return new Message(Type.USER_LIST, SERVER, userList);
     }
     
-    public static Message userDetailsResponse(String userId, String[] details) {
+    public static Message userDetailsResponse(String userId, Map<String, String> details) {
         return new Message(Type.USER_DETAILS_RESPONSE, userId, details);
     }
     

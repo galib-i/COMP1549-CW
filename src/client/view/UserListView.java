@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -38,21 +40,34 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void updateUserList(List<String> users, String userId, String coordinatorId) {
-        // Add suffix (You) to the current user
-        Integer currentUserIndex = users.indexOf(userId);
-        Integer coordinatorIndex = users.indexOf(coordinatorId);
+    public void updateUserList(Map<String, Map<String, String>> userList, String userId) {
+        List<String> formattedUsers = new ArrayList<>();
 
-        if (userId.equals(coordinatorId)) { 
-            users.set(coordinatorIndex, coordinatorId + " (You) 👑");
-        } else {
-            users.set(currentUserIndex, userId + " (You)");
-            users.set(coordinatorIndex, coordinatorId + " 👑");
+        for (Map.Entry<String, Map<String, String>> entry : userList.entrySet()) {
+            String user = entry.getKey();
+            Map<String, String> userDetails = entry.getValue();
+            String role = userDetails.get("role");
+            String status = userDetails.get("status");
+            String displayName = user;
+
+            if (user.equals(userId)) {
+                displayName += " (You)";
+            }
+
+            if (role.equals("COORDINATOR")) {
+                displayName += " 👑";
+            }
+
+            if (status.equals("INACTIVE")) {    
+                displayName += " 🌙";
+            }
+
+            formattedUsers.add(displayName);
         }
 
         SwingUtilities.invokeLater(() -> {
             usersModel.clear();
-            usersModel.addAll(users);
+            usersModel.addAll(formattedUsers);
         });
     }
 

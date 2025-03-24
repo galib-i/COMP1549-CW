@@ -43,10 +43,31 @@ public class UserManager {
         return connectedUsers.values();
     }
 
-    public String[] getUserList() {
-        return connectedUsers.keySet().toArray(new String[0]);
+    public Map<String, String> getUserDetails(String userId, Boolean multipleUsers) {
+        User user = connectedUsers.get(userId);
+        Map<String, String> userDetails = new LinkedHashMap<>();
+
+        if (!multipleUsers) {
+            userDetails.put("userId", user.getUserId());
+            userDetails.put("socketAddress", user.getSocketAddress());
+        }
+
+        userDetails.put("role", user.getRole().toString());
+        userDetails.put("status", user.getStatus().toString());
+
+        return userDetails;
     }
-    
+
+    public Map<String, Map<String, String>> getAllUserDetails() {
+        Map<String, Map<String, String>> allDetails = new LinkedHashMap<>();
+
+        connectedUsers.forEach((userId, user) -> 
+            allDetails.put(userId, getUserDetails(userId, true))
+        );
+        
+        return allDetails;
+    }
+
     public void toggleUserStatus(String userId) {
         User user = connectedUsers.get(userId);
         user.toggleStatus();

@@ -1,6 +1,6 @@
 package client.controller;
 
-import java.util.Arrays;
+import java.util.Map;
 
 import client.model.ActivityTracker;
 import client.model.ConnectionManager;
@@ -11,7 +11,6 @@ import common.model.Message;
 public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
-    private String coordinatorId = "";
     
     public MessageController(ConnectionManager model, ChatWindowView view) {
         this.model = model;
@@ -28,13 +27,19 @@ public class MessageController implements MessageListener {
     public void onMessageReceived(Message message) {
         switch (message.getType()) {
             case USER_LIST -> {
-                String[] users = (String[]) message.getContent();
-                coordinatorId = users[0];
-                view.getUserListView().updateUserList(Arrays.asList(users), model.getUserId(), coordinatorId);
+                @SuppressWarnings("unchecked")
+                Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>) message.getContent();
+                view.getUserListView().updateUserList(userList, model.getUserId());
             }
             case USER_DETAILS_RESPONSE -> {
-                String[] details = (String[]) message.getContent();
-                displayUserDetails(details[0], details[1], details[2], details[3]);
+                @SuppressWarnings("unchecked")
+                Map<String, String> details = (Map<String, String>) message.getContent();
+                displayUserDetails(
+                    details.get("userId"),
+                    details.get("role"),
+                    details.get("status"),
+                    details.get("socketAddress")
+                );
             }
             case MESSAGE -> {
                 view.getChatView().displayMessage("Group", message.getTimestamp(), message.getSender(), (String)message.getContent());

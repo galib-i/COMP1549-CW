@@ -1,5 +1,7 @@
 package client.model;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
@@ -10,11 +12,12 @@ public class ActivityTracker {
     private static final int INACTIVITY_TIMEOUT = 30000; // 30 seconds
     private final ConnectionManager connectionManager;
     private Timer inactivityTimer;
-    private boolean isActive = true;
+    private boolean active = true;
     
     public ActivityTracker(ConnectionManager connectionManager, JFrame frame) {
         this.connectionManager = connectionManager;
         windowFocusListener(frame);
+        mouseClickListener(frame);
         startInactivityTimer();
     }
     
@@ -30,14 +33,23 @@ public class ActivityTracker {
         });
     }
     
+    private void mouseClickListener(JFrame frame) {
+        frame.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                activityDetected();
+            }
+        });
+    }
+    
     private void startInactivityTimer() {
         if (inactivityTimer != null) {
             inactivityTimer.stop();
         }
 
         inactivityTimer = new Timer(INACTIVITY_TIMEOUT, e -> {
-            if (isActive) {
-                isActive = false;
+            if (active) {
+                active = false;
                 connectionManager.toggleStatus();
             }
         });
@@ -47,13 +59,13 @@ public class ActivityTracker {
     }
     
     public void activityDetected() {
-        boolean wasInactive = !isActive;
-        isActive = true;
-        startInactivityTimer(); // Reset timer
-
-        if (wasInactive) {
+        if (!active) {
+            active = true;
             connectionManager.toggleStatus();
+        } else {
+            active = true;
         }
+        startInactivityTimer();
     }
     
     public void shutdown() {

@@ -1,5 +1,7 @@
 package server.controller;
 
+import java.util.Map;
+
 import common.model.Message;
 import common.util.MessageFormatter;
 import server.model.User;
@@ -42,13 +44,8 @@ public class MessageController {
     
     public void sendUserDetails(String requesterId, String targetId) {
         User requester = userManager.getUser(requesterId);
-        User targetUser = userManager.getUser(targetId);
-        
-        if (requester == null || targetUser == null) {
-            return;
-        }
 
-        String[] details = {targetUser.getUserId(), targetUser.getRole().toString(), targetUser.getStatus().toString(), targetUser.getSocketAddress()};
+        Map<String, String> details = userManager.getUserDetails(targetId, false);
         Message detailsResponse = Message.userDetailsResponse(targetId, details);
         String formattedMessage = MessageFormatter.format(detailsResponse);
 
@@ -56,8 +53,8 @@ public class MessageController {
     }
 
     public void sendServerUserList() {
-        String[] userArray = userManager.getUserList();
-        Message userListMessage = Message.sendUserList(userArray);
+        Map<String, Map<String, String>> userList = userManager.getAllUserDetails();
+        Message userListMessage = Message.sendUserList(userList);
         String formattedMessage = MessageFormatter.format(userListMessage);
         
         broadcastMessage(formattedMessage);
