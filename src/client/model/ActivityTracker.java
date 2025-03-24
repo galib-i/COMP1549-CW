@@ -16,30 +16,22 @@ public class ActivityTracker {
     
     public ActivityTracker(ConnectionManager connectionManager, JFrame frame) {
         this.connectionManager = connectionManager;
-        windowFocusListener(frame);
-        mouseClickListener(frame);
-        startInactivityTimer();
-    }
-    
-    private void windowFocusListener(JFrame frame) {
+
         frame.addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-                activityDetected();
+            public void windowGainedFocus(WindowEvent e) { 
+                activityDetected(); 
             }
-            
-            @Override
-            public void windowLostFocus(WindowEvent e) {}
+
+            public void windowLostFocus(WindowEvent e) {} // do nothing
         });
-    }
-    
-    private void mouseClickListener(JFrame frame) {
+        
         frame.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                activityDetected();
+            public void mouseClicked(MouseEvent e) { 
+                activityDetected(); 
             }
         });
+        
+        startInactivityTimer();
     }
     
     private void startInactivityTimer() {
@@ -62,8 +54,6 @@ public class ActivityTracker {
         if (!active) {
             active = true;
             connectionManager.toggleStatus();
-        } else {
-            active = true;
         }
         startInactivityTimer();
     }
