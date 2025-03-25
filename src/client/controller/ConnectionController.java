@@ -23,9 +23,9 @@ public class ConnectionController {
         try {
             clientController.loadChatWindow(details.userId(), details.serverIp(), details.serverPort());
         } catch (ConnectException e) {
-            view.showMessage("Error", "Connection refused!\n(Is the chat server running?)");
+            view.showErrorMessage("Connection refused!\n(Is the chat server running?)");
         } catch (IllegalArgumentException | IOException e) {
-            view.showMessage("Error", e.getMessage());
+            view.showErrorMessage(e.getMessage());
         }
     }
 }

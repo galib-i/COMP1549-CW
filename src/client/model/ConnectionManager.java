@@ -65,7 +65,7 @@ public class ConnectionManager {
     
     private void processMessage(String messageString) {
         Message parsedMessage = MessageFormatter.parse(messageString);
-        messageListener.onMessageReceived(parsedMessage);
+        messageListener.handleCommunication(parsedMessage);
     }
 
     public void disconnect() {
@@ -113,7 +113,7 @@ public class ConnectionManager {
 
         try {
             int port = Integer.parseInt(serverPort);
-            if (!(port > 0 && port < 65535)) {
+            if (!(port > 0 && port <= 65535)) {
                 throw new IllegalArgumentException("Port must be between 0 and 65535!");
             }
         } catch (NumberFormatException e) {

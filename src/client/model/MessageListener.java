@@ -4,5 +4,5 @@ import common.model.Message;
 
 @FunctionalInterface
 public interface MessageListener {
-    void onMessageReceived(Message message);
+    void handleCommunication(Message message);
 }

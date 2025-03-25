@@ -81,7 +81,7 @@ public class LoginView extends JFrame {
         connectButton.addActionListener(listener);
     }
 
-    public void showMessage(String title, String message) {
-        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
+    public void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

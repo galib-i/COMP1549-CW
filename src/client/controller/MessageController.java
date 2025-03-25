@@ -24,7 +24,7 @@ public class MessageController implements MessageListener {
     }
 
     @Override
-    public void onMessageReceived(Message message) {
+    public void handleCommunication(Message message) {
         switch (message.getType()) {
             case USER_LIST -> processUserListMessage(message);
             case USER_DETAILS_RESPONSE -> processUserDetails(message);
@@ -50,16 +50,16 @@ public class MessageController implements MessageListener {
         view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
     }
 
-    private void displyMessage(Message message, String sender) {
+    private void displayMessage(Message message, String sender) {
         view.getChatView().displayMessage("Group", message.getTimestamp(), sender, (String)message.getContent());
     }
 
     private void processMessage(Message message) {
-        displyMessage(message, message.getSender());
+        displayMessage(message, message.getSender());
     }
 
     private void processServerMessage(Message message) {
-        displyMessage(message, "[SERVER]");       
+        displayMessage(message, "[SERVER]");       
     }
 
     private void sendMessage() {
