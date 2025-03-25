@@ -19,6 +19,7 @@ public class MessageController implements MessageListener {
         new ActivityTracker(model, view);
         
         view.getUserListView().viewDetailsAction(e -> showUserDetails());
+        view.getUserListView().privateMessageAction(e -> openPrivateChat());
         view.sendButtonAction(e -> sendMessage());
         model.setMessageListener(this);
     }
@@ -28,8 +29,9 @@ public class MessageController implements MessageListener {
         switch (message.getType()) {
             case USER_LIST -> processUserListMessage(message);
             case USER_DETAILS_RESPONSE -> processUserDetails(message);
-            case MESSAGE -> processMessage(message);
-            case ANNOUNCEMENT, USER_NOTIFICATION -> processServerMessage(message);
+            case PRIVATE_MESSAGE -> processPrivateMessage(message);
+            case USER_QUIT -> processUserQuit(message);
+            case MESSAGE, ANNOUNCEMENT, USER_NOTIFICATION -> processMessage(message);
             default -> {}
         }
     }
@@ -55,11 +57,21 @@ public class MessageController implements MessageListener {
     }
 
     private void processMessage(Message message) {
-        displayMessage(message, message.getSender());
+        String sender = message.getSender();
+        if (message.getType() != Message.Type.MESSAGE) {
+            sender = "[SERVER]";
+        }
+        displayMessage(message, sender);
     }
 
-    private void processServerMessage(Message message) {
-        displayMessage(message, "[SERVER]");       
+    private void processPrivateMessage(Message message) {
+        String requestingUser = message.getSender();
+        view.getChatView().openPrivateChat(requestingUser);
+    }
+
+    private void processUserQuit(Message message) {
+        String userId = (String) message.getContent();
+        view.getChatView().closePrivateChat(userId);
     }
 
     private void sendMessage() {
@@ -70,5 +82,12 @@ public class MessageController implements MessageListener {
     private void showUserDetails() {
         String selectedUser = view.getUserListView().getSelectedUser();  
         model.sendUserDetailsRequest(selectedUser);
+    }
+
+    private void openPrivateChat() {
+        String selectedUser = view.getUserListView().getSelectedUser();
+        view.getChatView().openPrivateChat(selectedUser);
+
+        model.sendPrivateMessage(selectedUser);
     }
 }

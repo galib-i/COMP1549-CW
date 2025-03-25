@@ -9,12 +9,14 @@ public class Message {
         USER_JOIN,
         REJECT_USER_JOIN,
         MESSAGE,
+        PRIVATE_MESSAGE,
         ANNOUNCEMENT,
         USER_NOTIFICATION,
         USER_LIST,
         USER_DETAILS_REQUEST,
         USER_DETAILS_RESPONSE,
         STATUS_UPDATE,
+        USER_QUIT,  // Add this new message type
     }
 
     private static final String SERVER = "SERVER";
@@ -67,6 +69,10 @@ public class Message {
     public static Message sendAnnouncement(String content) {
         return new Message(Type.ANNOUNCEMENT, SERVER, content);
     }
+    
+    public static Message sendPrivateMessage(String senderUserId, String targetUserId) {
+        return new Message(Type.PRIVATE_MESSAGE, senderUserId, targetUserId);
+    }
 
     public static Message notifyUser(String content) {
         return new Message(Type.USER_NOTIFICATION, SERVER, content);
@@ -79,12 +85,16 @@ public class Message {
     public static Message sendUserList(Map<String, Map<String, String>> userList) {
         return new Message(Type.USER_LIST, SERVER, userList);
     }
-    
+
     public static Message userDetailsResponse(String userId, Map<String, String> details) {
         return new Message(Type.USER_DETAILS_RESPONSE, userId, details);
     }
     
     public static Message updateStatus(String userId) {
         return new Message(Type.STATUS_UPDATE, userId);
+    }
+
+    public static Message userQuit(String userId) {
+        return new Message(Type.USER_QUIT, SERVER, userId);
     }
 }

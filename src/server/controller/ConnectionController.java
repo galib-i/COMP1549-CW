@@ -78,6 +78,7 @@ public class ConnectionController {
                 
                 switch (message.getType()) {
                     case MESSAGE -> processMessage(userId, message);
+                    case PRIVATE_MESSAGE -> processPrivateMessage(userId, message);
                     case USER_DETAILS_REQUEST -> processUserDetails(userId, message);
                     case STATUS_UPDATE -> processStatusUpdate(userId);
                     default -> {}
@@ -92,6 +93,9 @@ public class ConnectionController {
         try {
             boolean isCoordinator = userManager.getCoordinatorId().equals(userId);
             userManager.removeUser(userId);
+
+            Message quitMessage = Message.userQuit(userId);
+            messageController.broadcastMessage(MessageFormatter.format(quitMessage));
 
             if (isCoordinator) {
                 messageController.sendAnnouncement(COORDINATOR_LEAVE_MSG.formatted(userId));
@@ -119,6 +123,17 @@ public class ConnectionController {
     private void processStatusUpdate(String userId) {
         userManager.toggleUserStatus(userId);
         messageController.sendServerUserList();
+    }
+
+    private void processPrivateMessage(String senderId, Message message) {
+        String targetUserId = (String) message.getContent();
+        User targetUser = userManager.getUser(targetUserId);
+        
+        if (targetUser != null) {
+            Message privateChatRequest = Message.sendPrivateMessage(senderId, targetUserId);
+            String formattedMessage = MessageFormatter.format(privateChatRequest);
+            targetUser.getWriter().println(formattedMessage);
+        }
     }
 }
 

@@ -98,6 +98,11 @@ public class ConnectionManager {
         writer.println(MessageFormatter.format(statusMessage));
     }
     
+    public void sendPrivateMessage(String targetUserId) {
+        Message chatRequest = Message.sendPrivateMessage(userId, targetUserId);
+        writer.println(MessageFormatter.format(chatRequest));
+    }
+    
     private void validateInput(String userId, String serverIp, String serverPort) {
         if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
             throw new IllegalArgumentException("All fields are required!");

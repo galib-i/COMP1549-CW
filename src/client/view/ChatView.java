@@ -47,6 +47,10 @@ public class ChatView extends JPanel {
     } 
 
     public void openPrivateChat(String userId) {
+        if (chats.containsKey(userId)) {
+            return;
+        }
+
         ChatPanel privateChatPanel = new ChatPanel();
         chats.put(userId, privateChatPanel);
         chatTabs.addTab(userId, privateChatPanel);
@@ -54,6 +58,10 @@ public class ChatView extends JPanel {
 
     public void closePrivateChat(String userId) {
         ChatPanel privateChatPanel = chats.get(userId);
+        if (privateChatPanel == null) {
+            return;
+        }
+
         int index = chatTabs.indexOfComponent(privateChatPanel);
         chats.remove(userId);
         chatTabs.removeTabAt(index);
