@@ -17,8 +17,10 @@ import javax.swing.JTextField;
 import common.util.ConfigLoader;
 
 public class LoginView extends JFrame {
-    private JTextField userIdField, serverIpField, serverPortField;
-    private JButton connectButton;
+    private final JTextField userIdField = new JTextField();
+    private final JTextField serverIpField = new JTextField();
+    private final JTextField serverPortField = new JTextField();
+    private final JButton connectButton = new JButton("Connect");
 
     public LoginView() {
         ConfigLoader config = new ConfigLoader(); // Load defaults as placeholders, mostly for demo purposes
@@ -29,22 +31,18 @@ public class LoginView extends JFrame {
         rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32)); // Add padding
         JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
         
-        userIdField = new JTextField();
         JPanel userIdPanel = createLabelledField("User ID:", "", userIdField);
         mainPanel.add(userIdPanel, BorderLayout.NORTH);
         
         JPanel serverDetailsPanel = new JPanel(new BorderLayout(5, 5));
         serverDetailsPanel.setBorder(BorderFactory.createTitledBorder("Server"));
 
-        serverIpField = new JTextField();
-        serverPortField = new JTextField();
         JPanel serverIpPanel = createLabelledField("IP:", defaultIp, serverIpField);
         JPanel serverPortPanel = createLabelledField("Port:", defaultPort, serverPortField);
         serverDetailsPanel.add(serverIpPanel, BorderLayout.NORTH);
         serverDetailsPanel.add(serverPortPanel, BorderLayout.CENTER);
         mainPanel.add(serverDetailsPanel, BorderLayout.CENTER);
 
-        connectButton = new JButton("Connect");
         mainPanel.add(connectButton, BorderLayout.SOUTH);
 
         rootPanel.add(mainPanel, BorderLayout.CENTER);

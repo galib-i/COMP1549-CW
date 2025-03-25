@@ -10,8 +10,7 @@ import common.model.Message;
 
 public class MessageFormatter {  
     public static String format(Message message) {
-        return String.format("type=%s&sender=%s&content=%s", 
-            message.getType(), message.getSender(), message.getContent());
+        return "type=%s&sender=%s&content=%s".formatted(message.getType(), message.getSender(), message.getContent());
     }
     
     public static Message parse(String messageString) {
@@ -24,15 +23,9 @@ public class MessageFormatter {
         Object parsedContent;
 
         switch (type) {
-            case USER_LIST -> {
-                parsedContent = parseStringToNestedMap(content);
-            }
-            case USER_DETAILS_RESPONSE -> {
-                parsedContent = parseStringToMap(content);
-            }
-            default -> {
-                parsedContent = content;
-            }
+            case USER_LIST -> parsedContent = parseStringToNestedMap(content);
+            case USER_DETAILS_RESPONSE -> parsedContent = parseStringToMap(content);
+            default -> parsedContent = content;
         }
 
         return new Message(type, sender, parsedContent);

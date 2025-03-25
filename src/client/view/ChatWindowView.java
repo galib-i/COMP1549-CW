@@ -14,39 +14,33 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class ChatWindowView extends JFrame {
-    private final ChatView chatView;
-    private final UserListView userListView;
-    private JTextField messageField;
-    private JButton sendButton, quitButton;
-    private JLabel currentServerLabel;
+    private final ChatView chatView = new ChatView();
+    private final UserListView userListView = new UserListView();
+    private final JTextField messageField = new JTextField();
+    private final JButton sendButton = new JButton("Send"); 
+    private final JButton quitButton = new JButton("Quit");
+    private final JLabel currentServerLabel = new JLabel();
 
     public ChatWindowView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
         JPanel mainPanel = new JPanel(new BorderLayout(0, 10)); 
       
-        chatView = new ChatView();
         mainPanel.add(chatView, BorderLayout.CENTER);
-
-        userListView = new UserListView();
         rootPanel.add(userListView, BorderLayout.EAST);
        
         JPanel inputPanel = new JPanel(new BorderLayout(10, 0));
-        messageField = new JTextField();
         messageField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        sendButton = new JButton("Send");
         inputPanel.add(messageField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         mainPanel.add(inputPanel, BorderLayout.SOUTH);
         rootPanel.add(mainPanel, BorderLayout.CENTER);
 
-        JPanel currentServerPanel = new JPanel(new BorderLayout(5, 0));
-        currentServerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        currentServerLabel = new JLabel();
-        currentServerPanel.add(currentServerLabel, BorderLayout.WEST);
-        quitButton = new JButton("Quit");
-        currentServerPanel.add(quitButton, BorderLayout.EAST);
-        rootPanel.add(currentServerPanel, BorderLayout.SOUTH);
+        JPanel infoPanel = new JPanel(new BorderLayout(5, 0));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        infoPanel.add(currentServerLabel, BorderLayout.WEST);
+        infoPanel.add(quitButton, BorderLayout.EAST);
+        rootPanel.add(infoPanel, BorderLayout.SOUTH);
 
         add(rootPanel);
         setSize(700, 400);
@@ -67,7 +61,7 @@ public class ChatWindowView extends JFrame {
     }
 
     public void updateCurrentServerLabel(String serverIp, String serverPort) {
-        currentServerLabel.setText("Connected to " + serverIp + ":" + serverPort);
+        currentServerLabel.setText("Connected to %s:%s".formatted(serverIp, serverPort));
     }
 
     public void quitButtonAction(ActionListener listener) {
@@ -80,9 +74,9 @@ public class ChatWindowView extends JFrame {
     }
 
     public String getMessage() {
-        String message = messageField.getText();
+        String message = messageField.getText().trim();
         messageField.setText("");  // Clear message field
-        if (message.trim().isEmpty()) {  // Ignore empty messages
+        if (message.isEmpty()) {  // Ignore empty messages
             return null;
         }
         return message;

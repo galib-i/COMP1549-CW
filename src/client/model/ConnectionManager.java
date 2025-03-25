@@ -20,7 +20,6 @@ public class ConnectionManager {
     
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         validateInput(userId, serverIp, serverPort);
-        
         this.userId = userId;
         
         socket = new Socket(serverIp, Integer.parseInt(serverPort));
@@ -51,7 +50,7 @@ public class ConnectionManager {
         this.messageListener = listener;
     }
     
-    private void listenForMessages() { // DO NOT MODIFY
+    private void listenForMessages() {
         try {
             String message;
             while ((message = reader.readLine()) != null) {

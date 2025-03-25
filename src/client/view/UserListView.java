@@ -21,20 +21,23 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 public class UserListView extends JPanel {
-    private final JList<String> usersList;
-    private final DefaultListModel<String> usersModel;
-    private JPopupMenu userContextMenu;
-    private JMenuItem optionViewDetails = new JMenuItem("View user details");
-    private JMenuItem optionPrivateMessage = new JMenuItem("Private message");
+    private static final String SUFFIX_YOU= " (You)";
+    private static final String SUFFIX_COORDINATOR = " 👑";
+    private static final String SUFFIX_INACTIVE = " 🌙";
+
+    private final JList<String> usersList = new JList<>();
+    private final DefaultListModel<String> usersModel = new DefaultListModel<>();
+    private final JPopupMenu userContextMenu = new JPopupMenu();
+    private final JMenuItem optionViewDetails = new JMenuItem("View user details");
+    private final JMenuItem optionPrivateMessage = new JMenuItem("Private message");
 
     public UserListView() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Online"));
         setPreferredSize(new Dimension(120, 0));
-
-        usersModel = new DefaultListModel<>();  // Allows list & UI to be updated at runtime
-        usersList = new JList<>(usersModel);
         
+        usersList.setModel(usersModel);
+
         rightClickAction();
         JScrollPane scrollPane = new JScrollPane(usersList);
         add(scrollPane, BorderLayout.CENTER);
@@ -51,15 +54,15 @@ public class UserListView extends JPanel {
             String displayName = user;
 
             if (user.equals(userId)) {
-                displayName += " (You)";
+                displayName += SUFFIX_YOU;
             }
 
             if (role.equals("COORDINATOR")) {
-                displayName += " 👑";
+                displayName += SUFFIX_COORDINATOR;
             }
 
             if (status.equals("INACTIVE")) {    
-                displayName += " 🌙";
+                displayName += SUFFIX_INACTIVE;
             }
 
             formattedUsers.add(displayName);
@@ -72,8 +75,6 @@ public class UserListView extends JPanel {
     }
 
     private void rightClickAction() {
-        userContextMenu = new JPopupMenu();
-
         userContextMenu.add(optionViewDetails);
         userContextMenu.add(optionPrivateMessage);
         

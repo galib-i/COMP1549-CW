@@ -11,13 +11,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 public class ChatView extends JPanel {
-    private final JTabbedPane chatTabs;
-    private final HashMap<String, ChatPanel> chats;
+    private final JTabbedPane chatTabs = new JTabbedPane();
+    private final HashMap<String, ChatPanel> chats = new HashMap<>();
 
     public ChatView() {
         setLayout(new BorderLayout());
-        chatTabs = new JTabbedPane();
-        chats = new HashMap<>();
 
         ChatPanel groupChatPanel = new ChatPanel();
         chats.put("Group", groupChatPanel);

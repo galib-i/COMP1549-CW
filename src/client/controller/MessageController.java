@@ -22,35 +22,46 @@ public class MessageController implements MessageListener {
         view.sendButtonAction(e -> sendMessage());
         model.setMessageListener(this);
     }
-    
+
     @Override
     public void onMessageReceived(Message message) {
         switch (message.getType()) {
-            case USER_LIST -> {
-                @SuppressWarnings("unchecked")
-                Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>) message.getContent();
-                view.getUserListView().updateUserList(userList, model.getUserId());
-            }
-            case USER_DETAILS_RESPONSE -> {
-                @SuppressWarnings("unchecked")
-                Map<String, String> details = (Map<String, String>) message.getContent();
-                displayUserDetails(
-                    details.get("userId"),
-                    details.get("role"),
-                    details.get("status"),
-                    details.get("socketAddress")
-                );
-            }
-            case MESSAGE -> {
-                view.getChatView().displayMessage("Group", message.getTimestamp(), message.getSender(), (String)message.getContent());
-            }
-            case ANNOUNCEMENT, USER_NOTIFICATION -> {
-                view.getChatView().displayMessage("Group", message.getTimestamp(), "[SERVER]", (String)message.getContent());
-            }
+            case USER_LIST -> processUserListMessage(message);
+            case USER_DETAILS_RESPONSE -> processUserDetails(message);
+            case MESSAGE -> processMessage(message);
+            case ANNOUNCEMENT, USER_NOTIFICATION -> processServerMessage(message);
             default -> {}
         }
     }
-    
+
+    private void processUserListMessage(Message message) {
+        Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>)message.getContent();
+        view.getUserListView().updateUserList(userList, model.getUserId());
+    }
+
+    private void processUserDetails(Message message) {
+        Map<String, String> details = (Map<String, String>) message.getContent();
+        String userId = details.get("userId");
+
+        String formattedDetails = "User ID: %s\nRole: %s\nStatus: %s\nConnected through: %s"
+            .formatted(userId, details.get("role"), details.get("status"), details.get("socketAddress")
+        );
+        
+        view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
+    }
+
+    private void displyMessage(Message message, String sender) {
+        view.getChatView().displayMessage("Group", message.getTimestamp(), sender, (String)message.getContent());
+    }
+
+    private void processMessage(Message message) {
+        displyMessage(message, message.getSender());
+    }
+
+    private void processServerMessage(Message message) {
+        displyMessage(message, "[SERVER]");       
+    }
+
     private void sendMessage() {
         String messageText = view.getMessage();
         model.sendMessage(messageText);
@@ -59,15 +70,5 @@ public class MessageController implements MessageListener {
     private void showUserDetails() {
         String selectedUser = view.getUserListView().getSelectedUser();  
         model.sendUserDetailsRequest(selectedUser);
-    }
-    
-    private void displayUserDetails(String userId, String role, String status, String socketAddress) {
-        view.getUserListView().showMessage(
-            userId + "'s details", 
-            "User ID: " + userId + "\n" +
-            "Role: " + role + "\n" +
-            "Status: " + status + "\n" +
-            "Connected through: " + socketAddress
-        );
     }
 }

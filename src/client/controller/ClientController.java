@@ -7,13 +7,9 @@ import client.view.ChatWindowView;
 import client.view.LoginView;
 
 public class ClientController {
-    private final ConnectionManager connectionManager;
+    private final ConnectionManager connectionManager = new ConnectionManager();
     private LoginView loginView;
     private ChatWindowView chatWindowView;
-    
-    public ClientController() {
-        this.connectionManager = new ConnectionManager();
-    }
     
     public void loadLogin() {
         loginView = new LoginView();

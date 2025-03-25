@@ -6,12 +6,12 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private Properties properties;
+    private static final String CONFIG_FILE = "config.properties";
+    private final Properties properties = new Properties();
 
     public ConfigLoader() {
-        properties = new Properties();
         try {
-            InputStream input = new FileInputStream("config.properties");
+            InputStream input = new FileInputStream(CONFIG_FILE);
             properties.load(input);
         } catch (IOException e) {
             System.out.println("Error loading config file:\n" + e.getMessage());
