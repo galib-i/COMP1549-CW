@@ -12,11 +12,6 @@ import server.model.User;
 import server.model.UserManager;
 
 public class ConnectionController {
-    private static final String JOIN_MSG = "%s has joined the chat.";
-    private static final String LEAVE_MSG = "%s has left the chat.";
-    private static final String COORDINATOR_MSG = "%s is the coordinator.";
-    private static final String COORDINATOR_LEAVE_MSG = "The old coordinator, %s, has left the chat.";
-
     private final UserManager userManager;
     private final MessageController messageController;
 
@@ -24,7 +19,7 @@ public class ConnectionController {
         this.userManager = userManager;
         this.messageController = new MessageController(userManager);
     }
-
+ 
     public void handleNewConnection(Socket socket) {
         new Thread(() -> processConnection(socket)).start();
     }
@@ -63,11 +58,7 @@ public class ConnectionController {
 
     private void handleUserJoin(Socket socket, BufferedReader reader, PrintWriter writer, String userId, String socketAddress) {
         userManager.addUser(new User(userId, socketAddress, writer));
-        messageController.sendAnnouncement(JOIN_MSG.formatted(userId));
-        messageController.sendServerUserList();
-
-        String coordinatorId = userManager.getCoordinatorId();
-        messageController.sendUserNotification(userId, COORDINATOR_MSG.formatted(coordinatorId));
+        messageController.userJoined(userId);
     }
 
     private void handleClientCommunication(Socket socket, BufferedReader reader, String userId) {
@@ -93,18 +84,7 @@ public class ConnectionController {
         try {
             boolean isCoordinator = userManager.getCoordinatorId().equals(userId);
             userManager.removeUser(userId);
-
-            Message quitMessage = Message.userQuit(userId);
-            messageController.broadcastMessage(MessageFormatter.format(quitMessage));
-
-            if (isCoordinator) {
-                messageController.sendAnnouncement(COORDINATOR_LEAVE_MSG.formatted(userId));
-                messageController.sendAnnouncement(COORDINATOR_MSG.formatted(userManager.getCoordinatorId()));
-            } else {
-                messageController.sendAnnouncement(LEAVE_MSG.formatted(userId));
-            }
-
-            messageController.sendServerUserList();
+            messageController.userLeft(userId, isCoordinator);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -121,19 +101,12 @@ public class ConnectionController {
     }
 
     private void processStatusUpdate(String userId) {
-        userManager.toggleUserStatus(userId);
-        messageController.sendServerUserList();
+        messageController.processStatusUpdate(userId);
     }
 
     private void processPrivateMessage(String senderId, Message message) {
         String targetUserId = (String) message.getContent();
-        User targetUser = userManager.getUser(targetUserId);
-        
-        if (targetUser != null) {
-            Message privateChatRequest = Message.sendPrivateMessage(senderId, targetUserId);
-            String formattedMessage = MessageFormatter.format(privateChatRequest);
-            targetUser.getWriter().println(formattedMessage);
-        }
+        messageController.sendPrivateMessage(senderId, targetUserId);
     }
 }
 

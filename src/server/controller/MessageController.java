@@ -59,4 +59,36 @@ public class MessageController {
         
         broadcastMessage(formattedMessage);
     }
+
+    public void userJoined(String userId) {
+        sendAnnouncement("%s has joined the chat.".formatted(userId));
+        sendServerUserList();
+        String coordinatorId = userManager.getCoordinatorId();
+        sendUserNotification(userId, "%s is the coordinator.".formatted(coordinatorId));
+    }
+
+    public void userLeft(String userId, boolean wasCoordinator) {
+        Message quitMessage = Message.userQuit(userId);
+        broadcastMessage(MessageFormatter.format(quitMessage));
+
+        if (wasCoordinator) {
+            sendAnnouncement("The old coordinator, %s, has left the chat.".formatted(userId));
+            sendAnnouncement("%s is the coordinator.".formatted(userManager.getCoordinatorId()));
+        } else {
+            sendAnnouncement("%s has left the chat.".formatted(userId));
+        }
+        sendServerUserList();
+    }
+
+    public void sendPrivateMessage(String senderId, String targetUserId) {
+        User targetUser = userManager.getUser(targetUserId);
+        Message privateChatRequest = Message.sendPrivateMessage(senderId, targetUserId);
+        String formattedMessage = MessageFormatter.format(privateChatRequest);
+        targetUser.getWriter().println(formattedMessage);
+    }
+
+    public void processStatusUpdate(String userId) {
+        userManager.toggleUserStatus(userId);
+        sendServerUserList();
+    }
 }

@@ -16,7 +16,7 @@ public class Message {
         USER_DETAILS_REQUEST,
         USER_DETAILS_RESPONSE,
         STATUS_UPDATE,
-        USER_QUIT,  // Add this new message type
+        USER_QUIT
     }
 
     private static final String SERVER = "SERVER";
