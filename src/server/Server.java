@@ -19,9 +19,7 @@ public class Server {
 
         System.out.println("STARTING SERVER %s:%d\n".formatted(serverIp, serverPort));
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(serverPort, 0, InetAddress.getByName(serverIp));
-
+        try (ServerSocket serverSocket = new ServerSocket(serverPort, 0, InetAddress.getByName(serverIp))) {
             while (true) {
                 connectionController.handleNewConnection(serverSocket.accept());
             }

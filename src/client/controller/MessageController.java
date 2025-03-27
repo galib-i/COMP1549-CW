@@ -2,7 +2,6 @@ package client.controller;
 
 import java.util.Map;
 
-import client.model.ActivityTracker;
 import client.model.ConnectionManager;
 import client.model.MessageListener;
 import client.view.ChatWindowView;
@@ -12,11 +11,9 @@ public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
     
-    public MessageController(ConnectionManager model, ChatWindowView view) {
+    public MessageController(ConnectionManager model, ChatWindowView view, ActivityController activityController) {
         this.model = model;
         this.view = view;
-
-        new ActivityTracker(model, view);
         
         view.getUserListView().viewDetailsAction(e -> showUserDetails());
         view.getUserListView().privateMessageAction(e -> openPrivateChat());
