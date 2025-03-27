@@ -1,5 +1,6 @@
 package client.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import client.model.ActivityTracker;
@@ -53,14 +54,17 @@ public class MessageController implements MessageListener {
     }
 
     private void displayMessage(String sender, String recipient, Message message) { // BINGO
-        System.out.println("sender: %s, recipient: %s, message: %s".formatted(sender, recipient, message));
+        System.out.println("Sender: %s, Recipient: %s, Message: %s".formatted(sender, recipient, message.getContent()));
+        System.out.println(model.getUserId());
         String chatName;
-        if (recipient.equals("Group") || sender.equals("[SERVER]")) {
+        if (recipient.equals("Group") || (sender.equals("[SERVER]"))) {
             chatName = "Group";
+        } else if (model.getUserId().equals(sender)) {
+            chatName = recipient;
         } else {
             chatName = sender;
         }
-        System.out.println("chatName: %s, sender %s, recipient: %s, message:".formatted(chatName, sender, recipient));
+
         view.getChatView().displayMessage(chatName, message.getTimestamp(), sender, (String)message.getContent());
     }
 
@@ -71,6 +75,7 @@ public class MessageController implements MessageListener {
         if (sender.equals("SERVER")) {
             sender = "[SERVER]";
         }
+
         displayMessage(sender, recipient, message);
     }
 
@@ -90,9 +95,8 @@ public class MessageController implements MessageListener {
             return;
         }
         String chatName = view.getChatView().getCurrentChatName();
-        
-        System.out.println("SENT FROM:" + chatName + " " + messageText);
         model.sendMessage(chatName, messageText);
+
     }
 
     private void showUserDetails() {

@@ -28,6 +28,9 @@ public class MessageController {
         } else {
             User user = userManager.getUser(recipient);
             user.getWriter().println(formattedMessage);
+
+            User senderUser = userManager.getUser(sender);
+            senderUser.getWriter().println(formattedMessage);
         }
     }
 

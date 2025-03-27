@@ -84,7 +84,6 @@ public class ConnectionManager {
         if (message == null) {
             return;
         }
-        System.out.println("CLIENTCONNEMANAGER: " + userId + " " + recipient + " " + message);
         Message chatMessage = Message.sendMessage(userId, recipient, message);
         writer.println(MessageFormatter.format(chatMessage));
     }
