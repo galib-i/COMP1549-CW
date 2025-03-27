@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Allows the server to manage connected users and their details
+ */
 public class UserManager {
     private final Map<String, User> connectedUsers;
     private String coordinatorId;

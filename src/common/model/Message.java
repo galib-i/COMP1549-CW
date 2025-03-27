@@ -4,6 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Different messages that can be sent between the client and server
+ * for both actual chat messages and control messages
+ */
 public class Message {
     public enum Type {
         USER_JOIN,
@@ -17,7 +21,7 @@ public class Message {
         USER_QUIT
     }
 
-    private static final String SERVER = "SERVER";
+    private static final String SERVER = "[SERVER]";
     private static final String GROUP = "Group";
     private final Type type;
     private final String timestamp;

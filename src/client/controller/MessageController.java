@@ -7,6 +7,10 @@ import client.model.MessageListener;
 import client.view.ChatWindowView;
 import common.model.Message;
 
+/**
+ * Connects the chat window view to the server
+ * and controls client side communication
+ */
 public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
@@ -46,10 +50,6 @@ public class MessageController implements MessageListener {
         String sender = message.getSender();
         String recipient = message.getRecipient();
 
-        if (sender.equals("SERVER")) {
-            sender = "[SERVER]";
-        }
-
         displayMessage(sender, recipient, message);
     }
 
@@ -67,6 +67,7 @@ public class MessageController implements MessageListener {
     }
 
     private void controlUserListResponse(Message message) {
+        @SuppressWarnings("unchecked")
         Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>)message.getContent();
         view.getUserListView().updateUserList(userList, model.getUserId());
     }
@@ -77,6 +78,7 @@ public class MessageController implements MessageListener {
     }
 
     private void controlUserDetailsResponse(Message message) {
+         @SuppressWarnings("unchecked")
         Map<String, String> details = (Map<String, String>) message.getContent();
         String userId = details.get("userId");
 

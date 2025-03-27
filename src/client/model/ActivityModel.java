@@ -4,6 +4,10 @@ import javax.swing.Timer;
 
 import common.util.ConfigLoader;
 
+/**
+ * Tracks user activity and toggles the user's status
+ * when the user is inactive after a set timeout
+ */
 public class ActivityModel {
     private final int TIMEOUT;
     private final ConnectionManager connectionManager;

@@ -6,6 +6,9 @@ import java.net.ConnectException;
 import client.model.ConnectionManager;
 import client.view.LoginView;
 
+/**
+ * Connects the login view and the model to the server
+ */
 public class ConnectionController {
     private final LoginView view;
     private final ClientController clientController;

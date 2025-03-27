@@ -10,6 +10,10 @@ import java.net.Socket;
 import common.model.Message;
 import common.util.MessageFormatter;
 
+/**
+ * Manages the connection between the client and the server,
+ * sends and receives communication
+ */
 public class ConnectionManager {
     private Socket socket;
     private BufferedReader reader;

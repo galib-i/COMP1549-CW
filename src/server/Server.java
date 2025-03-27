@@ -8,6 +8,10 @@ import common.util.ConfigLoader;
 import server.controller.ConnectionController;
 import server.model.UserManager;
 
+/**
+ * Starts the server and listens for incoming connections
+ * server ip and port are loaded from the config file
+ */
 public class Server {
     public static void main(String[] args) {
         ConfigLoader config = new ConfigLoader();

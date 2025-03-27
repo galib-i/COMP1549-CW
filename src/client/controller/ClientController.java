@@ -7,6 +7,10 @@ import client.model.ConnectionManager;
 import client.view.ChatWindowView;
 import client.view.LoginView;
 
+/**
+ * Connects the client views and models to the server
+ * acts as the main controller for the client
+ */
 public class ClientController {
     private final ConnectionManager connectionManager;
     private final LoginView loginView;

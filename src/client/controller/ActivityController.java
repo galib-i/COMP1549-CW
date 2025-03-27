@@ -9,6 +9,9 @@ import javax.swing.JFrame;
 
 import client.model.ActivityModel;
 
+/** 
+ * Connects the activity model to the view (JFrame) and starts a timer
+*/
 public class ActivityController {
     private final ActivityModel model;
     

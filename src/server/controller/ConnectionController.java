@@ -11,6 +11,9 @@ import common.util.MessageFormatter;
 import server.model.User;
 import server.model.UserManager;
 
+/**
+ * Controls the server side connection between the server and a client
+ */
 public class ConnectionController {
     private final UserManager userManager;
     private final MessageController messageController;

@@ -2,6 +2,9 @@ package server.model;
 
 import java.io.PrintWriter;
 
+/**
+ * Holds details about a connected user
+ */
 public class User {
     public enum Role {
         MEMBER, COORDINATOR

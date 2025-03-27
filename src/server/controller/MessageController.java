@@ -7,6 +7,9 @@ import common.util.MessageFormatter;
 import server.model.User;
 import server.model.UserManager;
 
+/**
+ * Controls the messages sent between the server and clients
+ */
 public class MessageController {
     private final UserManager userManager;
 
@@ -15,18 +18,18 @@ public class MessageController {
     }
 
     public void controlUserJoin(String userId) {
-        sendMessage("SERVER", "Group", "%s has joined the chat.".formatted(userId));
+        sendMessage("[SERVER]", "Group", "%s has joined the chat.".formatted(userId));
         broadcastUserList();
         String coordinatorId = userManager.getCoordinatorId();
-        notifyUser("SERVER", userId, "%s is the coordinator.".formatted(coordinatorId));
+        notifyUser("[SERVER]", userId, "%s is the coordinator.".formatted(coordinatorId));
     }
 
     public void controlUserLeave(String userId, boolean isCoordinator) {
-        sendMessage("SERVER", "Group", "%s has left the chat.".formatted(userId));
+        sendMessage("[SERVER]", "Group", "%s has left the chat.".formatted(userId));
 
         if (isCoordinator) {
-            sendMessage("SERVER", "Group", "The old coordinator, %s, has left the chat.".formatted(userId));
-            sendMessage("SERVER", "Group", "%s is the coordinator.".formatted(userManager.getCoordinatorId()));
+            sendMessage("[SERVER]", "Group", "The old coordinator, %s, has left the chat.".formatted(userId));
+            sendMessage("[SERVER]", "Group", "%s is the coordinator.".formatted(userManager.getCoordinatorId()));
         }
         broadcastUserList();
 
