@@ -21,10 +21,10 @@ public class ConnectionController {
     }
  
     public void handleNewConnection(Socket socket) {
-        new Thread(() -> processConnection(socket)).start();
+        new Thread(() -> controlConnection(socket)).start();
     }
 
-    private void processConnection(Socket socket) {
+    private void controlConnection(Socket socket) {
         String userId = null;
         boolean userAdded = false;
 
@@ -40,41 +40,41 @@ public class ConnectionController {
             }
 
             userId = joinResponse.getSender();
-            String socketAddress = "%s:%d".formatted(socket.getInetAddress().getHostAddress(), socket.getPort());
 
-            if (userManager.getUser(userId) != null) { // Only allow unique userIds
+            if (userManager.getUser(userId) != null) {
                 Message rejectMessage = Message.rejectJoin(userId);
                 writer.println(MessageFormatter.format(rejectMessage));
                 return;
             }
             userAdded = true;
-            handleUserJoin(socket, reader, writer, userId, socketAddress);
-            handleClientCommunication(socket, reader, userId);
+            String socketAddress = "%s:%d".formatted(socket.getInetAddress().getHostAddress(), socket.getPort());
+            controlUserJoin(socket, reader, writer, userId, socketAddress);
+            controlClientCommunication(reader, userId);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (userAdded) {
-            processDisconnection(userId, socket);
+            controlDisconnection(userId, socket);
             }
         }
     }
 
-    private void handleUserJoin(Socket socket, BufferedReader reader, PrintWriter writer, String userId, String socketAddress) {
+    private void controlUserJoin(Socket socket, BufferedReader reader, PrintWriter writer, String userId, String socketAddress) {
         userManager.addUser(new User(userId, socketAddress, writer));
-        messageController.userJoined(userId);
+        messageController.controlUserJoin(userId);
     }
 
-    private void handleClientCommunication(Socket socket, BufferedReader reader, String userId) {
+    private void controlClientCommunication(BufferedReader reader, String userId) {
         try {
             String messageStr;
             while ((messageStr = reader.readLine()) != null) {
                 Message message = MessageFormatter.parse(messageStr);
                 
                 switch (message.getType()) {
-                    case MESSAGE -> processMessage(userId, message);
-                    case OPEN_PRIVATE_CHAT -> processPrivateChat(userId, message);
-                    case USER_DETAILS_REQUEST -> processUserDetails(userId, message);
-                    case STATUS_UPDATE -> processStatusUpdate(userId);
+                    case MESSAGE -> controlMessage(userId, message);
+                    case OPEN_PRIVATE_CHAT -> controlPrivateChat(userId, message);
+                    case USER_DETAILS_REQUEST -> controlUserDetails(userId, message);
+                    case STATUS_UPDATE -> controlStatusUpdate(userId);
                     default -> {}
                 }
             }
@@ -83,33 +83,33 @@ public class ConnectionController {
         }
     }
 
-    private void processDisconnection(String userId, Socket socket) {
+    private void controlDisconnection(String userId, Socket socket) {
         try {
             boolean isCoordinator = userManager.getCoordinatorId().equals(userId);
             userManager.removeUser(userId);
-            messageController.userLeft(userId, isCoordinator);
+            messageController.controlUserLeave(userId, isCoordinator);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void processMessage(String senderId, Message message) {
+    private void controlMessage(String senderId, Message message) {
         String recipient = message.getRecipient();
         String content = (String) message.getContent();
         messageController.sendMessage(senderId, recipient, content);
     }
 
-    private void processUserDetails(String requesterId, Message message) {
+    private void controlUserDetails(String requesterId, Message message) {
         String targetId = (String) message.getContent();
         messageController.sendUserDetails(requesterId, targetId);
     }
 
-    private void processStatusUpdate(String userId) {
-        messageController.processStatusUpdate(userId);
+    private void controlStatusUpdate(String userId) {
+        messageController.controlStatusUpdate(userId);
     }
 
-    private void processPrivateChat(String senderId, Message message) {
+    private void controlPrivateChat(String senderId, Message message) {
         String targetUserId = (String) message.getContent();
         messageController.openPrivateChat(senderId, targetUserId);
     }

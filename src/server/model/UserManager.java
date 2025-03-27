@@ -9,14 +9,14 @@ public class UserManager {
     private String coordinatorId;
 
     public UserManager() {
-        this.connectedUsers = new LinkedHashMap<>(); // Keeps insertion order
+        this.connectedUsers = new LinkedHashMap<>();
         this.coordinatorId = null;
     }
 
     public void addUser(User user) {
         connectedUsers.put(user.getUserId(), user);
 
-        if (coordinatorId == null) { // First user is the coordinator
+        if (coordinatorId == null) {
             coordinatorId = user.getUserId();
             user.toCoordinator();
         }
@@ -25,7 +25,7 @@ public class UserManager {
     public void removeUser(String userId) {
         connectedUsers.remove(userId);
 
-        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) { // Reassign coordinator role if previous one leaves
+        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) {
             coordinatorId = connectedUsers.keySet().iterator().next();
             connectedUsers.get(coordinatorId).toCoordinator();
         }
@@ -35,19 +35,19 @@ public class UserManager {
         return connectedUsers.get(userId);
     }
 
-    public String getCoordinatorId() {
-        return coordinatorId;
-    }
-
     public Collection<User> getUsers() {
         return connectedUsers.values();
     }
 
-    public Map<String, String> getUserDetails(String userId, Boolean multipleUsers) {
+    public String getCoordinatorId() {
+        return coordinatorId;
+    }
+
+    public Map<String, String> getUserDetails(String userId, boolean allDetails) {
         User user = connectedUsers.get(userId);
         Map<String, String> userDetails = new LinkedHashMap<>();
 
-        if (!multipleUsers) {
+        if (allDetails) {
             userDetails.put("userId", user.getUserId());
             userDetails.put("socketAddress", user.getSocketAddress());
         }
@@ -62,7 +62,7 @@ public class UserManager {
         Map<String, Map<String, String>> allDetails = new LinkedHashMap<>();
 
         connectedUsers.forEach((userId, user) -> 
-            allDetails.put(userId, getUserDetails(userId, true))
+            allDetails.put(userId, getUserDetails(userId, false))
         );
         
         return allDetails;

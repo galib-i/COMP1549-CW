@@ -1,6 +1,5 @@
 package client.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import client.model.ActivityTracker;
@@ -26,46 +25,24 @@ public class MessageController implements MessageListener {
     }
 
     @Override
-    public void handleCommunication(Message message) {
+    public void controlCommunication(Message message) {
         switch (message.getType()) {
-            case USER_LIST -> processUserListMessage(message);
-            case USER_DETAILS_RESPONSE -> processUserDetails(message);
-            case OPEN_PRIVATE_CHAT -> processPrivateChat(message);
-            case USER_QUIT -> processUserQuit(message);
+            case USER_LIST -> controlUserListResponse(message);
+            case USER_DETAILS_RESPONSE -> controlUserDetailsResponse(message);
+            case OPEN_PRIVATE_CHAT -> openPrivateChat(message);
+            case USER_QUIT -> controlDisconnection(message);
             case MESSAGE -> processMessage(message);
             default -> {}
         }
     }
 
-    private void processUserListMessage(Message message) {
-        Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>)message.getContent();
-        view.getUserListView().updateUserList(userList, model.getUserId());
-    }
-
-    private void processUserDetails(Message message) {
-        Map<String, String> details = (Map<String, String>) message.getContent();
-        String userId = details.get("userId");
-
-        String formattedDetails = "User ID: %s\nRole: %s\nStatus: %s\nConnected through: %s"
-            .formatted(userId, details.get("role"), details.get("status"), details.get("socketAddress")
-        );
-        
-        view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
-    }
-
-    private void displayMessage(String sender, String recipient, Message message) { // BINGO
-        System.out.println("Sender: %s, Recipient: %s, Message: %s".formatted(sender, recipient, message.getContent()));
-        System.out.println(model.getUserId());
-        String chatName;
-        if (recipient.equals("Group") || (sender.equals("[SERVER]"))) {
-            chatName = "Group";
-        } else if (model.getUserId().equals(sender)) {
-            chatName = recipient;
-        } else {
-            chatName = sender;
+    private void sendMessage() {
+        String messageText = view.getMessage();
+        if (messageText == null) {
+            return;
         }
-
-        view.getChatView().displayMessage(chatName, message.getTimestamp(), sender, (String)message.getContent());
+        String chatName = view.getChatView().getCurrentChatName();
+        model.sendMessage(chatName, messageText);
     }
 
     private void processMessage(Message message) {
@@ -79,24 +56,22 @@ public class MessageController implements MessageListener {
         displayMessage(sender, recipient, message);
     }
 
-    private void processPrivateChat(Message message) {
-        String requestingUser = message.getSender();
-        view.getChatView().openPrivateChat(requestingUser);
-    }
-
-    private void processUserQuit(Message message) {
-        String userId = (String) message.getSender();
-        view.getChatView().closePrivateChat(userId);
-    }
-
-    private void sendMessage() {
-        String messageText = view.getMessage();
-        if (messageText == null) {
-            return;
+    private void displayMessage(String sender, String recipient, Message message) {
+        String chatName;
+        if (recipient.equals("Group") || (sender.equals("[SERVER]"))) {
+            chatName = "Group";
+        } else if (model.getUserId().equals(sender)) {
+            chatName = recipient;
+        } else {
+            chatName = sender;
         }
-        String chatName = view.getChatView().getCurrentChatName();
-        model.sendMessage(chatName, messageText);
 
+        view.getChatView().displayMessage(chatName, message.getTimestamp(), sender, (String)message.getContent());
+    }
+
+    private void controlUserListResponse(Message message) {
+        Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>)message.getContent();
+        view.getUserListView().updateUserList(userList, model.getUserId());
     }
 
     private void showUserDetails() {
@@ -104,10 +79,32 @@ public class MessageController implements MessageListener {
         model.sendUserDetailsRequest(model.getUserId(), selectedUser);
     }
 
-    private void openPrivateChat() {
+    private void controlUserDetailsResponse(Message message) {
+        Map<String, String> details = (Map<String, String>) message.getContent();
+        String userId = details.get("userId");
+
+        String formattedDetails = "User ID: %s\nRole: %s\nStatus: %s\nConnected through: %s"
+            .formatted(userId, details.get("role"), details.get("status"), details.get("socketAddress")
+        );
+        
+        view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
+    }
+
+     private void openPrivateChat() {
         String selectedUser = view.getUserListView().getSelectedUser();
         view.getChatView().openPrivateChat(selectedUser);
 
         model.openPrivateChat(selectedUser);
+    }
+
+    private void openPrivateChat(Message message) {
+        String requestingUser = message.getSender();
+        view.getChatView().openPrivateChat(requestingUser);
+        view.getChatView().displayMessage("Group", message.getTimestamp(), "[SERVER]", "%s has opened a private chat with you.".formatted(requestingUser));
+    }
+
+    private void controlDisconnection(Message message) {
+        String userId = (String) message.getSender();
+        view.getChatView().closePrivateChat(userId);
     }
 }

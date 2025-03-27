@@ -51,21 +51,21 @@ public class UserListView extends JPanel {
             Map<String, String> userDetails = entry.getValue();
             String role = userDetails.get("role");
             String status = userDetails.get("status");
-            String displayName = user;
+            StringBuilder displayName = new StringBuilder(user);
 
             if (user.equals(userId)) {
-                displayName += SUFFIX_YOU;
+                displayName.append(SUFFIX_YOU);
             }
 
-            if (role.equals("COORDINATOR")) {
-                displayName += SUFFIX_COORDINATOR;
+            if ("COORDINATOR".equals(role)) {
+                displayName.append(SUFFIX_COORDINATOR);
             }
 
-            if (status.equals("INACTIVE")) {    
-                displayName += SUFFIX_INACTIVE;
+            if ("INACTIVE".equals(status)) {
+                displayName.append(SUFFIX_INACTIVE);
             }
 
-            formattedUsers.add(displayName);
+            formattedUsers.add(displayName.toString());
         }
 
         SwingUtilities.invokeLater(() -> {
@@ -82,12 +82,12 @@ public class UserListView extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    int index = usersList.locationToIndex(e.getPoint()); // Find the index of the clicked item
+                    int index = usersList.locationToIndex(e.getPoint());
                     Rectangle clickedCellBounds = usersList.getCellBounds(index, index);
  
-                    if (clickedCellBounds.contains(e.getPoint())) { // If clicked point is within the rectangular bounds
+                    if (clickedCellBounds.contains(e.getPoint())) {
                         String clickedUser = usersModel.getElementAt(index);
-                        if (!clickedUser.contains("(You)")) { // Ignore self-clicks
+                        if (!clickedUser.contains("(You)")) {
                             usersList.setSelectedIndex(index);
                             userContextMenu.show(usersList, e.getX(), e.getY());
                         }
@@ -107,7 +107,7 @@ public class UserListView extends JPanel {
 
     public String getSelectedUser() {
         String selectedUser = usersList.getSelectedValue();
-        return selectedUser.split(" ")[0]; // Remove any suffixes
+        return selectedUser.split(" ")[0];
     }
 
     public void showMessage(String title, String message) {

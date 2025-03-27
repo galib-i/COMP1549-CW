@@ -14,17 +14,19 @@ public class Server {
         UserManager userManager = new UserManager();
         ConnectionController connectionController = new ConnectionController(userManager);
 
-        String ip = config.get("default.server.ip");
-        int port = config.getInt("default.server.port");
+        String serverIp = config.get("default.server.ip");
+        int serverPort = config.getInt("default.server.port");
 
-        System.out.println("STARTING SERVER (" + ip + ":" + port + ")\n");
+        System.out.println("STARTING SERVER %s:%d\n".formatted(serverIp, serverPort));
 
-        try (ServerSocket serverSocket = new ServerSocket(port, 0, InetAddress.getByName(ip))) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(serverPort, 0, InetAddress.getByName(serverIp));
+
             while (true) {
                 connectionController.handleNewConnection(serverSocket.accept());
             }
         } catch (IOException e) {
-            System.out.println("ERROR STARTING SERVER (" + e.getMessage() + ")\n");
+            System.err.println("ERROR STARTING SERVER (%s)\n".formatted(e.getMessage()));
         }
     }
 }

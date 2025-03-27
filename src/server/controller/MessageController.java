@@ -13,12 +13,34 @@ public class MessageController {
     public MessageController(UserManager userManager) {
         this.userManager = userManager;
     }
-    
-    public void broadcastMessage(String content) {
-        for (User user : userManager.getUsers()) {
-            user.getWriter().println(content);
+
+    public void controlUserJoin(String userId) {
+        sendMessage("SERVER", "Group", "%s has joined the chat.".formatted(userId));
+        broadcastUserList();
+        String coordinatorId = userManager.getCoordinatorId();
+        notifyUser("SERVER", userId, "%s is the coordinator.".formatted(coordinatorId));
+    }
+
+    public void controlUserLeave(String userId, boolean isCoordinator) {
+        sendMessage("SERVER", "Group", "%s has left the chat.".formatted(userId));
+
+        if (isCoordinator) {
+            sendMessage("SERVER", "Group", "The old coordinator, %s, has left the chat.".formatted(userId));
+            sendMessage("SERVER", "Group", "%s is the coordinator.".formatted(userManager.getCoordinatorId()));
         }
-    } 
+        broadcastUserList();
+
+        sendMessageToGroup(Message.closePrivateChat(userId));
+    }
+
+    public void controlStatusUpdate(String userId) {
+        userManager.toggleUserStatus(userId);
+        broadcastUserList();
+    }
+
+    public void openPrivateChat(String senderId, String targetUserId) {
+        sendMessageToUser(targetUserId, Message.openPrivateChat(senderId, targetUserId));
+    }
 
     public void sendMessage(String sender, String recipient, String content) {
         Message message = Message.sendMessage(sender, recipient, content);
@@ -34,62 +56,32 @@ public class MessageController {
         }
     }
 
-    public void notifyUser(String sender, String recipient, String content) {
-        User user = userManager.getUser(recipient);
-        Message message = Message.sendMessage(sender, recipient, content);
-        String formattedMessage = MessageFormatter.format(message);
-            
-        user.getWriter().println(formattedMessage);
-
-    }
-
     public void sendUserDetails(String requesterId, String targetId) {
-        User requester = userManager.getUser(requesterId);
-
-        Map<String, String> details = userManager.getUserDetails(targetId, false);
-        Message detailsResponse = Message.userDetailsResponse(targetId, details);
-        String formattedMessage = MessageFormatter.format(detailsResponse);
-
-        requester.getWriter().println(formattedMessage);
+        Map<String, String> details = userManager.getUserDetails(targetId, true);
+        sendMessageToUser(requesterId, Message.respondUserDetails(targetId, details));
     }
 
-    public void sendServerUserList() {
-        Map<String, Map<String, String>> userList = userManager.getAllUserDetails();
-        Message userListMessage = Message.sendUserList(userList);
-        String formattedMessage = MessageFormatter.format(userListMessage);
-        
-        broadcastMessage(formattedMessage);
+    public void broadcastUserList() {
+        sendMessageToGroup(Message.sendUserList(userManager.getAllUserDetails()));
     }
 
-    public void userJoined(String userId) {
-        sendMessage("SERVER", "Group", "%s has joined the chat.".formatted(userId));
-        sendServerUserList();
-        String coordinatorId = userManager.getCoordinatorId();
-        notifyUser("SERVER", userId, "%s is the coordinator.".formatted(coordinatorId));
+    public void notifyUser(String sender, String recipient, String content) {
+        sendMessageToUser(recipient, Message.sendMessage(sender, recipient, content));
     }
 
-    public void userLeft(String userId, boolean wasCoordinator) {
-        sendMessage("SERVER", "Group", "%s has left the chat.".formatted(userId));
+    private void sendMessageToUser(String userId, Message message) {
+        User user = userManager.getUser(userId);
+        String formattedMessage = MessageFormatter.format(message);
+        user.getWriter().println(formattedMessage);
+    }
 
-        if (wasCoordinator) {
-            sendMessage("SERVER", "Group", "The old coordinator, %s, has left the chat.".formatted(userId));
-            sendMessage("SERVER", "Group", "%s is the coordinator.".formatted(userManager.getCoordinatorId()));
+    private void sendMessageToGroup(Message message) {
+        broadcastMessage(MessageFormatter.format(message));
+    }
+
+    public void broadcastMessage(String content) {
+        for (User user : userManager.getUsers()) {
+            user.getWriter().println(content);
         }
-        sendServerUserList();
-
-        Message quitMessage = Message.userQuit(userId);
-        broadcastMessage(MessageFormatter.format(quitMessage));
-    }
-
-    public void openPrivateChat(String senderId, String targetUserId) {
-        User targetUser = userManager.getUser(targetUserId);
-        Message privateChatRequest = Message.openPrivateChat(senderId, targetUserId);
-        String formattedMessage = MessageFormatter.format(privateChatRequest);
-        targetUser.getWriter().println(formattedMessage);
-    }
-
-    public void processStatusUpdate(String userId) {
-        userManager.toggleUserStatus(userId);
-        sendServerUserList();
-    }
+    } 
 }

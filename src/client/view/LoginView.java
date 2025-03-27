@@ -23,12 +23,12 @@ public class LoginView extends JFrame {
     private final JButton connectButton = new JButton("Connect");
 
     public LoginView() {
-        ConfigLoader config = new ConfigLoader(); // Load defaults as placeholders, mostly for demo purposes
+        ConfigLoader config = new ConfigLoader();
         String defaultIp = config.get("default.server.ip");
         String defaultPort = String.valueOf(config.getInt("default.server.port"));
 
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
-        rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32)); // Add padding
+        rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32));
         JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
         
         JPanel userIdPanel = createLabelledField("User ID:", "", userIdField);
@@ -47,10 +47,10 @@ public class LoginView extends JFrame {
 
         rootPanel.add(mainPanel, BorderLayout.CENTER);
         add(rootPanel);
-        getRootPane().setDefaultButton(connectButton); // Enter key mimics button click
+        getRootPane().setDefaultButton(connectButton);
         pack();
     
-        setLocationRelativeTo(null); // Center window on the screen
+        setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -61,7 +61,7 @@ public class LoginView extends JFrame {
         field.setText(placeholder);
 
         JLabel label = new JLabel(labelText);
-        label.setFont(label.getFont().deriveFont(Font.PLAIN)); // Unbold default font
+        label.setFont(label.getFont().deriveFont(Font.PLAIN));
         label.setPreferredSize(new Dimension(45, 0));
     
         JPanel labelledField = new JPanel(new BorderLayout(5, 5));

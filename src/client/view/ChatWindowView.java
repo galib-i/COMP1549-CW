@@ -23,7 +23,7 @@ public class ChatWindowView extends JFrame {
 
     public ChatWindowView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
-        rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+        rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JPanel mainPanel = new JPanel(new BorderLayout(0, 10)); 
       
         mainPanel.add(chatView, BorderLayout.CENTER);
@@ -44,10 +44,10 @@ public class ChatWindowView extends JFrame {
 
         add(rootPanel);
         setSize(700, 400);
-        setLocationRelativeTo(null); // Center window on the screen
+        setLocationRelativeTo(null);
  
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        exitWindowAction(); // x button mimics quit button click
+        exitWindowAction();
     }
 
 
@@ -70,12 +70,12 @@ public class ChatWindowView extends JFrame {
 
     public void sendButtonAction(ActionListener listener) {
         sendButton.addActionListener(listener);
-        messageField.addActionListener(listener); // Enter key mimics send button click
+        messageField.addActionListener(listener);
     }
 
     public String getMessage() {
         String message = messageField.getText();
-        messageField.setText("");  // Clear message field
+        messageField.setText("");
         if (message.isBlank()) {
             return null;
         }

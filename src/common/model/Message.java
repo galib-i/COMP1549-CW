@@ -54,39 +54,39 @@ public class Message {
         return timestamp;
     }
 
-    public static Message requestJoin(String userId) {
-        return new Message(Type.USER_JOIN, userId, SERVER, null);
+    public static Message requestJoin(String requesterId) {
+        return new Message(Type.USER_JOIN, requesterId, SERVER, null);
     }
 
-    public static Message rejectJoin(String userId) {
-        return new Message(Type.REJECT_USER_JOIN, SERVER, userId, null);
+    public static Message rejectJoin(String recipientId) {
+        return new Message(Type.REJECT_USER_JOIN, SERVER, recipientId, null);
     }
 
     public static Message sendMessage(String sender, String recipient, String content) {
         return new Message(Type.MESSAGE, sender, recipient, content);
     }
 
-    public static Message openPrivateChat(String senderUserId, String targetUserId) {
-        return new Message(Type.OPEN_PRIVATE_CHAT, senderUserId, SERVER, targetUserId);
+    public static Message openPrivateChat(String senderId, String targetId) {
+        return new Message(Type.OPEN_PRIVATE_CHAT, senderId, SERVER, targetId);
     }
 
-    public static Message requestUserDetails(String senderUserId, String targetUserId) {
-        return new Message(Type.USER_DETAILS_REQUEST, senderUserId, SERVER, targetUserId);
+    public static Message requestUserDetails(String senderId, String targetId) {
+        return new Message(Type.USER_DETAILS_REQUEST, senderId, SERVER, targetId);
     }
     
     public static Message sendUserList(Map<String, Map<String, String>> userList) {
         return new Message(Type.USER_LIST, SERVER, GROUP, userList);
     }
 
-    public static Message userDetailsResponse(String userId, Map<String, String> details) {
-        return new Message(Type.USER_DETAILS_RESPONSE, SERVER, userId, details);
+    public static Message respondUserDetails(String recipientId, Map<String, String> details) {
+        return new Message(Type.USER_DETAILS_RESPONSE, SERVER, recipientId, details);
     }
     
     public static Message updateStatus(String userId) {
         return new Message(Type.STATUS_UPDATE, SERVER, GROUP, userId);
     }
 
-    public static Message userQuit(String userId) {
-        return new Message(Type.USER_QUIT, userId, SERVER, null);
+    public static Message closePrivateChat(String senderId) {
+        return new Message(Type.USER_QUIT, senderId, SERVER, null);
     }
 }

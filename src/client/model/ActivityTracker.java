@@ -28,7 +28,7 @@ public class ActivityTracker {
                 activityDetected(); 
             }
 
-            public void windowLostFocus(WindowEvent e) {} // do nothing, required by WindowFocusListener
+            public void windowLostFocus(WindowEvent e) {}
         });
         
         frame.addMouseListener(new MouseAdapter() {

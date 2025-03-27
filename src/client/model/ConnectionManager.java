@@ -26,11 +26,17 @@ public class ConnectionManager {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         writer = new PrintWriter(socket.getOutputStream(), true);
         
-        // Attempt to connect user to server
+        authenticateUser();
+
+        messageListenerThread = new Thread(this::listenForMessages);
+        messageListenerThread.setDaemon(true);
+        messageListenerThread.start();
+    }
+
+    private void authenticateUser() throws IllegalArgumentException, IOException {
         Message joinMessage = Message.requestJoin(userId);
         writer.println(MessageFormatter.format(joinMessage));
 
-        // Check if user ID is already in use
         String response = reader.readLine();
         Message responseMsg = MessageFormatter.parse(response);
         
@@ -40,16 +46,38 @@ public class ConnectionManager {
         } else {
             processMessage(response);
         }
+    }
 
-        messageListenerThread = new Thread(this::listenForMessages);
-        messageListenerThread.setDaemon(true);
-        messageListenerThread.start();
+    public String getUserId() {
+        return userId;
     }
 
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
+
+    public void sendMessage(String recipient, String message) {
+        sendFormattedMessage(Message.sendMessage(userId, recipient, message));
+    }
     
+    public void sendUserDetailsRequest(String senderUserId, String targetUserId) {
+        sendFormattedMessage(Message.requestUserDetails(userId, targetUserId));
+    }
+    
+    public void toggleStatus() {        
+        sendFormattedMessage(Message.updateStatus(userId));
+    }
+    
+    public void openPrivateChat(String targetUserId) {
+        sendFormattedMessage(Message.openPrivateChat(userId, targetUserId));
+    }
+
+    private void sendFormattedMessage(Message message) {
+        if (message != null) {
+            writer.println(MessageFormatter.format(message));
+        }
+    }
+
     private void listenForMessages() {
         try {
             String message;
@@ -65,7 +93,7 @@ public class ConnectionManager {
     
     private void processMessage(String messageString) {
         Message parsedMessage = MessageFormatter.parse(messageString);
-        messageListener.handleCommunication(parsedMessage);
+        messageListener.controlCommunication(parsedMessage);
     }
 
     public void disconnect() {
@@ -74,33 +102,6 @@ public class ConnectionManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void sendMessage(String recipient, String message) {
-        if (message == null) {
-            return;
-        }
-        Message chatMessage = Message.sendMessage(userId, recipient, message);
-        writer.println(MessageFormatter.format(chatMessage));
-    }
-    
-    public void sendUserDetailsRequest(String senderUserId, String targetUserId) {
-        Message detailsRequest = Message.requestUserDetails(senderUserId, targetUserId);
-        writer.println(MessageFormatter.format(detailsRequest));
-    }
-    
-    public void toggleStatus() {        
-        Message statusMessage = Message.updateStatus(userId);
-        writer.println(MessageFormatter.format(statusMessage));
-    }
-    
-    public void openPrivateChat(String targetUserId) {
-        Message chatRequest = Message.openPrivateChat(userId, targetUserId);
-        writer.println(MessageFormatter.format(chatRequest));
     }
     
     private void validateInput(String userId, String serverIp, String serverPort) {

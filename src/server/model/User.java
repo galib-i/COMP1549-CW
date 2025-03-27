@@ -11,10 +11,10 @@ public class User {
         ACTIVE, INACTIVE
     }
 
-    private String userId;
+    private final String userId;
     private Role role;
     private Status status;
-    private String socketAddress;
+    private final String socketAddress;
     private PrintWriter writer;
     
     public User(String userId, String socketAddress, PrintWriter writer) {

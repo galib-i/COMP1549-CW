@@ -27,10 +27,9 @@ public class ChatView extends JPanel {
     public void displayMessage(String chatName, String timestamp, String sender, String message) {
         ChatPanel chatPanel = chats.get(chatName);
         if (chatPanel == null) {
-            System.out.println("Chat not found: " + chatName);
             return;
         }
-        chatPanel.chatArea.append("[" + timestamp + "] " + sender + ": " + message + "\n");
+        chatPanel.chatArea.append("[%s] %s: %s\n".formatted(timestamp, sender, message));
     }
 
     private static class ChatPanel extends JPanel {
