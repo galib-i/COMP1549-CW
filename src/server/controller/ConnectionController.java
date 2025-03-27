@@ -26,6 +26,7 @@ public class ConnectionController {
 
     private void processConnection(Socket socket) {
         String userId = null;
+        boolean userAdded = false;
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -46,13 +47,15 @@ public class ConnectionController {
                 writer.println(MessageFormatter.format(rejectMessage));
                 return;
             }
-
+            userAdded = true;
             handleUserJoin(socket, reader, writer, userId, socketAddress);
             handleClientCommunication(socket, reader, userId);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            if (userAdded) {
             processDisconnection(userId, socket);
+            }
         }
     }
 
@@ -69,7 +72,7 @@ public class ConnectionController {
                 
                 switch (message.getType()) {
                     case MESSAGE -> processMessage(userId, message);
-                    case PRIVATE_MESSAGE -> processPrivateMessage(userId, message);
+                    case OPEN_PRIVATE_CHAT -> processPrivateChat(userId, message);
                     case USER_DETAILS_REQUEST -> processUserDetails(userId, message);
                     case STATUS_UPDATE -> processStatusUpdate(userId);
                     default -> {}
@@ -92,7 +95,9 @@ public class ConnectionController {
     }
 
     private void processMessage(String senderId, Message message) {
-        messageController.sendMessage(senderId, (String) message.getContent());
+        String recipient = message.getRecipient();
+        String content = (String) message.getContent();
+        messageController.sendMessage(senderId, recipient, content);
     }
 
     private void processUserDetails(String requesterId, Message message) {
@@ -104,9 +109,9 @@ public class ConnectionController {
         messageController.processStatusUpdate(userId);
     }
 
-    private void processPrivateMessage(String senderId, Message message) {
+    private void processPrivateChat(String senderId, Message message) {
         String targetUserId = (String) message.getContent();
-        messageController.sendPrivateMessage(senderId, targetUserId);
+        messageController.openPrivateChat(senderId, targetUserId);
     }
 }
 

@@ -80,16 +80,17 @@ public class ConnectionManager {
         return userId;
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(String recipient, String message) {
         if (message == null) {
             return;
         }
-        Message chatMessage = Message.sendMessage(userId, message);
+        System.out.println("CLIENTCONNEMANAGER: " + userId + " " + recipient + " " + message);
+        Message chatMessage = Message.sendMessage(userId, recipient, message);
         writer.println(MessageFormatter.format(chatMessage));
     }
     
-    public void sendUserDetailsRequest(String targetUserId) {
-        Message detailsRequest = Message.requestUserDetails(targetUserId);
+    public void sendUserDetailsRequest(String senderUserId, String targetUserId) {
+        Message detailsRequest = Message.requestUserDetails(senderUserId, targetUserId);
         writer.println(MessageFormatter.format(detailsRequest));
     }
     
@@ -98,8 +99,8 @@ public class ConnectionManager {
         writer.println(MessageFormatter.format(statusMessage));
     }
     
-    public void sendPrivateMessage(String targetUserId) {
-        Message chatRequest = Message.sendPrivateMessage(userId, targetUserId);
+    public void openPrivateChat(String targetUserId) {
+        Message chatRequest = Message.openPrivateChat(userId, targetUserId);
         writer.println(MessageFormatter.format(chatRequest));
     }
     

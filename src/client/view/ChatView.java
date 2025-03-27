@@ -25,7 +25,11 @@ public class ChatView extends JPanel {
     }
 
     public void displayMessage(String chatName, String timestamp, String sender, String message) {
+        System.out.println("VIEW: %s, %s, %s, %s".formatted(chatName, timestamp, sender, message));
         ChatPanel chatPanel = chats.get(chatName);
+        if (chatPanel == null) {
+            System.out.println("Chat panel not found for %s".formatted(chatName));
+        }
         chatPanel.chatArea.append("[" + timestamp + "] " + sender + ": " + message + "\n");
     }
 
@@ -45,6 +49,10 @@ public class ChatView extends JPanel {
             add(scrollPane, BorderLayout.CENTER);
         }
     } 
+
+    public String getCurrentChatName() {
+        return chatTabs.getTitleAt(chatTabs.getSelectedIndex());
+    }
 
     public void openPrivateChat(String userId) {
         if (chats.containsKey(userId)) {

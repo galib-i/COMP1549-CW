@@ -74,9 +74,9 @@ public class ChatWindowView extends JFrame {
     }
 
     public String getMessage() {
-        String message = messageField.getText().trim();
+        String message = messageField.getText();
         messageField.setText("");  // Clear message field
-        if (message.isEmpty()) {  // Ignore empty messages
+        if (message.isBlank()) {
             return null;
         }
         return message;

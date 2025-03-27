@@ -9,9 +9,7 @@ public class Message {
         USER_JOIN,
         REJECT_USER_JOIN,
         MESSAGE,
-        PRIVATE_MESSAGE,
-        ANNOUNCEMENT,
-        USER_NOTIFICATION,
+        OPEN_PRIVATE_CHAT,
         USER_LIST,
         USER_DETAILS_REQUEST,
         USER_DETAILS_RESPONSE,
@@ -20,30 +18,32 @@ public class Message {
     }
 
     private static final String SERVER = "SERVER";
-    private static final String CLIENT = "CLIENT";
+    private static final String GROUP = "Group";
     private final Type type;
     private final String timestamp;
     private final String sender;
+    private final String recipient;
     private final Object content;
 
 
-    public Message(Type type, String sender, Object content) {
+    public Message(Type type, String sender, String recipient, Object content) {
         this.type = type;
         this.sender = sender;
+        this.recipient = recipient;
         this.content = content;
         this.timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
     }
 
-    public Message(Type type, String sender) {
-        this(type, sender, null);
-    }
-    
     public Type getType() {
         return type;
     }
 
     public String getSender() {
         return sender;
+    }
+
+    public String getRecipient() {
+        return recipient;
     }
 
     public Object getContent() {
@@ -55,46 +55,38 @@ public class Message {
     }
 
     public static Message requestJoin(String userId) {
-        return new Message(Type.USER_JOIN, userId);
+        return new Message(Type.USER_JOIN, userId, SERVER, null);
     }
 
     public static Message rejectJoin(String userId) {
-        return new Message(Type.REJECT_USER_JOIN, SERVER, userId);
+        return new Message(Type.REJECT_USER_JOIN, SERVER, userId, null);
     }
 
-    public static Message sendMessage(String userId, String content) {
-        return new Message(Type.MESSAGE, userId, content);
-    }
-    
-    public static Message sendAnnouncement(String content) {
-        return new Message(Type.ANNOUNCEMENT, SERVER, content);
-    }
-    
-    public static Message sendPrivateMessage(String senderUserId, String targetUserId) {
-        return new Message(Type.PRIVATE_MESSAGE, senderUserId, targetUserId);
+    public static Message sendMessage(String sender, String recipient, String content) {
+        return new Message(Type.MESSAGE, sender, recipient, content);
     }
 
-    public static Message notifyUser(String content) {
-        return new Message(Type.USER_NOTIFICATION, SERVER, content);
+    public static Message openPrivateChat(String senderUserId, String targetUserId) {
+        return new Message(Type.OPEN_PRIVATE_CHAT, senderUserId, SERVER, targetUserId);
     }
-    
-    public static Message requestUserDetails(String targetUserId) {
-        return new Message(Type.USER_DETAILS_REQUEST, CLIENT, targetUserId);
+
+    public static Message requestUserDetails(String senderUserId, String targetUserId) {
+        return new Message(Type.USER_DETAILS_REQUEST, senderUserId, SERVER, targetUserId);
     }
     
     public static Message sendUserList(Map<String, Map<String, String>> userList) {
-        return new Message(Type.USER_LIST, SERVER, userList);
+        return new Message(Type.USER_LIST, SERVER, GROUP, userList);
     }
 
     public static Message userDetailsResponse(String userId, Map<String, String> details) {
-        return new Message(Type.USER_DETAILS_RESPONSE, userId, details);
+        return new Message(Type.USER_DETAILS_RESPONSE, SERVER, userId, details);
     }
     
     public static Message updateStatus(String userId) {
-        return new Message(Type.STATUS_UPDATE, userId);
+        return new Message(Type.STATUS_UPDATE, SERVER, GROUP, userId);
     }
 
     public static Message userQuit(String userId) {
-        return new Message(Type.USER_QUIT, SERVER, userId);
+        return new Message(Type.USER_QUIT, userId, SERVER, null);
     }
 }

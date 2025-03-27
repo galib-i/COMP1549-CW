@@ -29,9 +29,9 @@ public class MessageController implements MessageListener {
         switch (message.getType()) {
             case USER_LIST -> processUserListMessage(message);
             case USER_DETAILS_RESPONSE -> processUserDetails(message);
-            case PRIVATE_MESSAGE -> processPrivateMessage(message);
+            case OPEN_PRIVATE_CHAT -> processPrivateChat(message);
             case USER_QUIT -> processUserQuit(message);
-            case MESSAGE, ANNOUNCEMENT, USER_NOTIFICATION -> processMessage(message);
+            case MESSAGE -> processMessage(message);
             default -> {}
         }
     }
@@ -52,42 +52,58 @@ public class MessageController implements MessageListener {
         view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
     }
 
-    private void displayMessage(Message message, String sender) {
-        view.getChatView().displayMessage("Group", message.getTimestamp(), sender, (String)message.getContent());
+    private void displayMessage(String sender, String recipient, Message message) { // BINGO
+        System.out.println("sender: %s, recipient: %s, message: %s".formatted(sender, recipient, message));
+        String chatName;
+        if (recipient.equals("Group") || sender.equals("[SERVER]")) {
+            chatName = "Group";
+        } else {
+            chatName = sender;
+        }
+        System.out.println("chatName: %s, sender %s, recipient: %s, message:".formatted(chatName, sender, recipient));
+        view.getChatView().displayMessage(chatName, message.getTimestamp(), sender, (String)message.getContent());
     }
 
     private void processMessage(Message message) {
         String sender = message.getSender();
-        if (message.getType() != Message.Type.MESSAGE) {
+        String recipient = message.getRecipient();
+
+        if (sender.equals("SERVER")) {
             sender = "[SERVER]";
         }
-        displayMessage(message, sender);
+        displayMessage(sender, recipient, message);
     }
 
-    private void processPrivateMessage(Message message) {
+    private void processPrivateChat(Message message) {
         String requestingUser = message.getSender();
         view.getChatView().openPrivateChat(requestingUser);
     }
 
     private void processUserQuit(Message message) {
-        String userId = (String) message.getContent();
+        String userId = (String) message.getSender();
         view.getChatView().closePrivateChat(userId);
     }
 
     private void sendMessage() {
         String messageText = view.getMessage();
-        model.sendMessage(messageText);
+        if (messageText == null) {
+            return;
+        }
+        String chatName = view.getChatView().getCurrentChatName();
+        
+        System.out.println("SENT FROM:" + chatName + " " + messageText);
+        model.sendMessage(chatName, messageText);
     }
 
     private void showUserDetails() {
         String selectedUser = view.getUserListView().getSelectedUser();  
-        model.sendUserDetailsRequest(selectedUser);
+        model.sendUserDetailsRequest(model.getUserId(), selectedUser);
     }
 
     private void openPrivateChat() {
         String selectedUser = view.getUserListView().getSelectedUser();
         view.getChatView().openPrivateChat(selectedUser);
 
-        model.sendPrivateMessage(selectedUser);
+        model.openPrivateChat(selectedUser);
     }
 }

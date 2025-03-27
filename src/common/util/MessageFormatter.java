@@ -10,15 +10,16 @@ import common.model.Message;
 
 public class MessageFormatter {  
     public static String format(Message message) {
-        return "type=%s&sender=%s&content=%s".formatted(message.getType(), message.getSender(), message.getContent());
-    }
+        return "type=%s&sender=%s&recipient=%s&content=%s".formatted(message.getType(), message.getSender(), message.getRecipient(), message.getContent());
+}
     
     public static Message parse(String messageString) {
-        String[] parts = messageString.split("&", 3);
+        String[] parts = messageString.split("&", 4);
 
         Message.Type type = Message.Type.valueOf(parts[0].replace("type=", ""));
         String sender = parts[1].replace("sender=", "");
-        String content = parts[2].replace("content=", "");
+        String recipient = parts[2].replace("recipient=", "");
+        String content = parts[3].replace("content=", "");
 
         Object parsedContent;
 
@@ -28,7 +29,7 @@ public class MessageFormatter {
             default -> parsedContent = content;
         }
 
-        return new Message(type, sender, parsedContent);
+        return new Message(type, sender, recipient, parsedContent);
     }
 
     private static Map<String, Map<String, String>> parseStringToNestedMap(String input) {
