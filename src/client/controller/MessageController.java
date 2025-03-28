@@ -25,8 +25,9 @@ public class MessageController implements MessageListener {
         model.setMessageListener(this);
     }
     /**
-     * Controls the communication between the client and server, override @see MessageListener 
+     * Controls the communication between the client and server
      * @param message Message received from the server
+     * @see MessageListener
      */
     @Override
     public void controlCommunication(Message message) {

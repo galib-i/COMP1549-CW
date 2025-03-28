@@ -2,6 +2,8 @@ package client.controller;
 
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 import client.model.ActivityModel;
 import client.model.ConnectionManager;
 import client.view.ChatWindowView;
@@ -35,11 +37,17 @@ public class ClientController {
         
         ActivityController activityController = new ActivityController(activityModel, chatWindowView);
         new MessageController(connectionManager, chatWindowView, activityController);
-        
+
+        connectionManager.setDisconnectionListener(this::handleServerDisconnection);        
         connectionManager.connect(userId, serverIp, serverPort);
         
         chatWindowView.setVisible(true);
         loginView.dispose();
+    }
+    
+    private void handleServerDisconnection() {
+        chatWindowView.showDisconnectedServerMessage();
+        quitClient();
     }
     
     private void quitClient() {

@@ -2,6 +2,7 @@ package client.model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.SocketException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -19,6 +20,7 @@ public class ConnectionManager {
     private PrintWriter writer;
     private Thread messageListenerThread;
     private MessageListener messageListener;
+    private DisconnectedServerListener disconnectedServerListener;
     private String userId;
     
     /**
@@ -71,6 +73,14 @@ public class ConnectionManager {
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
+    /**
+     * Sets the disconnection listener to handle server disconnection (server disconnects but client is still running)
+     * @param listener
+     * @see DisconnectedServerListener
+     */
+    public void setDisconnectionListener(DisconnectedServerListener listener) {
+        this.disconnectedServerListener = listener;
+    }
 
     public void sendMessage(String recipient, String message) {
         sendFormattedMessage(Message.sendMessage(userId, recipient, message));
@@ -100,9 +110,12 @@ public class ConnectionManager {
             while ((message = reader.readLine()) != null) {
                 processMessage(message);
             }
+        } catch (SocketException e) {
+            handleDisconnectedServer();
         } catch (IOException e) {
             if (!socket.isClosed()) {
                 e.printStackTrace();
+                handleDisconnectedServer();
             }
         }
     }
@@ -119,7 +132,11 @@ public class ConnectionManager {
             e.printStackTrace();
         }
     }
-    
+
+    private void handleDisconnectedServer() {
+        disconnectedServerListener.whenServerDisconnected();
+    }
+
     private void validateInput(String userId, String serverIp, String serverPort) {
         if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
             throw new IllegalArgumentException("All fields are required!");
