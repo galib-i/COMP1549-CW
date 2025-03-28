@@ -22,11 +22,19 @@ public class ConnectionController {
         this.userManager = userManager;
         this.messageController = new MessageController(userManager);
     }
- 
+    
+    /**
+     * Processes the new connection from a client by creating a new thread to control the connection
+     * @param socket Socket connection to the client
+     */
     public void handleNewConnection(Socket socket) {
         new Thread(() -> controlConnection(socket)).start();
     }
 
+    /**
+     * Processes the connection (join/leave) between the server and client
+     * @param socket Socket connection to the client
+     */
     private void controlConnection(Socket socket) {
         String userId = null;
         boolean userAdded = false;
@@ -51,8 +59,8 @@ public class ConnectionController {
             }
             userAdded = true;
             String socketAddress = "%s:%d".formatted(socket.getInetAddress().getHostAddress(), socket.getPort());
-            controlUserJoin(socket, reader, writer, userId, socketAddress);
-            controlClientCommunication(reader, userId);
+            controlUserJoin(userId, socket, reader, writer, socketAddress);
+            controlClientCommunication(userId, reader);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -62,15 +70,20 @@ public class ConnectionController {
         }
     }
 
-    private void controlUserJoin(Socket socket, BufferedReader reader, PrintWriter writer, String userId, String socketAddress) {
+    private void controlUserJoin(String userId, Socket socket, BufferedReader reader, PrintWriter writer, String socketAddress) {
         userManager.addUser(new User(userId, socketAddress, writer));
         messageController.controlUserJoin(userId);
     }
 
-    private void controlClientCommunication(BufferedReader reader, String userId) {
+    /**
+     * Processes the communication (different types of messages) between the server and client
+     * @param reader BufferedReader to read messages from the client
+     * @param userId Id of the user
+     */
+    private void controlClientCommunication(String userId, BufferedReader reader) {
         try {
             String messageStr;
-            while ((messageStr = reader.readLine()) != null) {
+            while ((messageStr = reader.readLine()) != null) { // Constantly listen for messages from the client
                 Message message = MessageFormatter.parse(messageStr);
                 
                 switch (message.getType()) {

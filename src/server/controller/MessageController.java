@@ -16,20 +16,29 @@ public class MessageController {
     public MessageController(UserManager userManager) {
         this.userManager = userManager;
     }
-
+    
+    /**
+     * When a user joins the server, announce join, update user list and notify user of coordinator
+     * @param userId Id of the user that joined
+     */
     public void controlUserJoin(String userId) {
         sendMessage("[SERVER]", "Group", "%s has joined the chat.".formatted(userId));
         broadcastUserList();
         String coordinatorId = userManager.getCoordinatorId();
-        notifyUser("[SERVER]", userId, "%s is the coordinator.".formatted(coordinatorId));
+        sendMessageToUser(userId, Message.sendMessage("[SERVER]", userId, "%s is the coordinator.".formatted(coordinatorId)));
     }
 
+    /**
+     * When a user leaves the server, announce leave, update user list and if was coordinator, announce new one
+     * @param userId Id of the user that left
+     * @param isCoordinator True: user was the coordinator
+     */
     public void controlUserLeave(String userId, boolean isCoordinator) {
         sendMessage("[SERVER]", "Group", "%s has left the chat.".formatted(userId));
 
         if (isCoordinator) {
-            sendMessage("[SERVER]", "Group", "The old coordinator, %s, has left the chat.".formatted(userId));
-            sendMessage("[SERVER]", "Group", "%s is the coordinator.".formatted(userManager.getCoordinatorId()));
+            sendMessage("[SERVER]", "Group", 
+                "The old coordinator, %s, has left the chat. %s is the new coordinator.".formatted(userId, userManager.getCoordinatorId()));
         }
         broadcastUserList();
 
@@ -45,9 +54,16 @@ public class MessageController {
         sendMessageToUser(targetUserId, Message.openPrivateChat(senderId, targetUserId));
     }
 
+    /**
+     * Sends a message to everyone or displays for both sender and recipient in a private chat
+     * @param sender Id of the user or server sending the message
+     * @param recipient Id of the user or "Group" receiving the message
+     * @param content Message content
+     */
     public void sendMessage(String sender, String recipient, String content) {
         Message message = Message.sendMessage(sender, recipient, content);
         String formattedMessage = MessageFormatter.format(message);
+
         if (recipient.equals("Group")) {
             broadcastMessage(formattedMessage);
         } else {

@@ -24,14 +24,17 @@ public class MessageController implements MessageListener {
         view.sendButtonAction(e -> sendMessage());
         model.setMessageListener(this);
     }
-
+    /**
+     * Controls the communication between the client and server, override @see MessageListener 
+     * @param message Message received from the server
+     */
     @Override
     public void controlCommunication(Message message) {
         switch (message.getType()) {
             case USER_LIST -> controlUserListResponse(message);
             case USER_DETAILS_RESPONSE -> controlUserDetailsResponse(message);
             case OPEN_PRIVATE_CHAT -> openPrivateChat(message);
-            case USER_QUIT -> controlDisconnection(message);
+            case CLOSE_PRIVATE_CHAT -> controlDisconnection(message);
             case MESSAGE -> processMessage(message);
             default -> {}
         }
@@ -67,7 +70,7 @@ public class MessageController implements MessageListener {
     }
 
     private void controlUserListResponse(Message message) {
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") // The message type is known to be a map
         Map<String, Map<String, String>> userList = (Map<String, Map<String, String>>)message.getContent();
         view.getUserListView().updateUserList(userList, model.getUserId());
     }
@@ -78,7 +81,7 @@ public class MessageController implements MessageListener {
     }
 
     private void controlUserDetailsResponse(Message message) {
-         @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") // The message type is known to be a map
         Map<String, String> details = (Map<String, String>) message.getContent();
         String userId = details.get("userId");
 

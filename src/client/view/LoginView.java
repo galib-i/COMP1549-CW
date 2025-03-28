@@ -16,6 +16,9 @@ import javax.swing.JTextField;
 
 import common.util.ConfigLoader;
 
+/**
+ * The login window that prompts user for id and server details (placeholder values match hosted server details)
+ */
 public class LoginView extends JFrame {
     private final JTextField userIdField = new JTextField();
     private final JTextField serverIpField = new JTextField();
@@ -71,6 +74,9 @@ public class LoginView extends JFrame {
         return labelledField;
     }
 
+    /**
+     * Access all input fields all at once for easy validation
+     */
     public record ConnectionDetails(String userId, String serverIp, String serverPort) {}
 
     public ConnectionDetails getConnectionDetails() {

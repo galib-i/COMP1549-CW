@@ -12,25 +12,33 @@ public class UserManager {
     private String coordinatorId;
 
     public UserManager() {
-        this.connectedUsers = new LinkedHashMap<>();
+        this.connectedUsers = new LinkedHashMap<>(); // Maintains join order
         this.coordinatorId = null;
     }
 
+    /**
+     * Registers user to the server and if the first one, assign coordinator role
+     * @param user Object of the user to be added
+     */
     public void addUser(User user) {
         connectedUsers.put(user.getUserId(), user);
 
         if (coordinatorId == null) {
             coordinatorId = user.getUserId();
-            user.toCoordinator();
+            user.promoteToCoordinator();
         }
     }
 
+    /**
+     * Removes user from the server and assigns coordinator role to the next user (start of the LinkedHashMap)
+     * @param userId Id of the user to be removed
+     */
     public void removeUser(String userId) {
         connectedUsers.remove(userId);
 
         if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) {
             coordinatorId = connectedUsers.keySet().iterator().next();
-            connectedUsers.get(coordinatorId).toCoordinator();
+            connectedUsers.get(coordinatorId).promoteToCoordinator();
         }
     }
 
@@ -46,6 +54,12 @@ public class UserManager {
         return coordinatorId;
     }
 
+    /**
+     * Returns user details based on the request
+     * @param userId Id of the requested user
+     * @param allDetails True: include all details else only role and status
+     * @return Map of user details
+     */
     public Map<String, String> getUserDetails(String userId, boolean allDetails) {
         User user = connectedUsers.get(userId);
         Map<String, String> userDetails = new LinkedHashMap<>();
@@ -63,7 +77,7 @@ public class UserManager {
 
     public Map<String, Map<String, String>> getAllUserDetails() {
         Map<String, Map<String, String>> allDetails = new LinkedHashMap<>();
-
+        // Key: userId, Value: userDetails
         connectedUsers.forEach((userId, user) -> 
             allDetails.put(userId, getUserDetails(userId, false))
         );

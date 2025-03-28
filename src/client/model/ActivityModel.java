@@ -5,8 +5,7 @@ import javax.swing.Timer;
 import common.util.ConfigLoader;
 
 /**
- * Tracks user activity and toggles the user's status
- * when the user is inactive after a set timeout
+ * Tracks user activity and toggles the user's status when the user is inactive after a set timeout, based on the config
  */
 public class ActivityModel {
     private final int TIMEOUT;

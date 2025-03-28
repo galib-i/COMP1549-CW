@@ -37,7 +37,7 @@ public class User {
         return role;
     }
 
-    public void toCoordinator() {
+    public void promoteToCoordinator() {
         this.role = Role.COORDINATOR;
     }
 
@@ -45,6 +45,9 @@ public class User {
         return status;
     }
 
+    /**
+     * Switches user status between active and inactive
+     */
     public void toggleStatus() {
         if (status == Status.ACTIVE) {
             status = Status.INACTIVE;

@@ -13,6 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * The main chat window that displays the chat messages, user list and bottom panel
+ */
 public class ChatWindowView extends JFrame {
     private final ChatView chatView = new ChatView();
     private final UserListView userListView = new UserListView();
@@ -44,12 +47,11 @@ public class ChatWindowView extends JFrame {
 
         add(rootPanel);
         setSize(700, 400);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // center window
  
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        exitWindowAction();
+        exitWindowAction(); // x button mimics quit button
     }
-
 
     private void exitWindowAction() {
         addWindowListener(new WindowAdapter() {
@@ -70,7 +72,7 @@ public class ChatWindowView extends JFrame {
 
     public void sendButtonAction(ActionListener listener) {
         sendButton.addActionListener(listener);
-        messageField.addActionListener(listener);
+        messageField.addActionListener(listener); // Enter key mimics send button
     }
 
     public String getMessage() {

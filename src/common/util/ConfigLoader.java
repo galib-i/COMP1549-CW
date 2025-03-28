@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Loads configuration properties from a file to be used by both client and server
+ */
 public class ConfigLoader {
     private static final String CONFIG_FILE = "config.properties";
     private final Properties properties = new Properties();

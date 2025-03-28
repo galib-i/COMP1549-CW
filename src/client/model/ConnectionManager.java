@@ -11,8 +11,7 @@ import common.model.Message;
 import common.util.MessageFormatter;
 
 /**
- * Manages the connection between the client and the server,
- * sends and receives communication
+ * Manages the connection between the client and the server, sends and receives communication
  */
 public class ConnectionManager {
     private Socket socket;
@@ -22,6 +21,15 @@ public class ConnectionManager {
     private MessageListener messageListener;
     private String userId;
     
+    /**
+     * Sends a request to the server, checks if user is unique and starts a message listener thread
+     * @param userId Id of the user to connect
+     * @param serverIp Server IP address
+     * @param serverPort Server port number
+     * @throws IllegalArgumentException If input validation fails or user is not unique
+     * @throws ConnectException If server cannot connect (e.g. server is not running)
+     * @throws IOException Handles all other socket exceptions
+     */
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         validateInput(userId, serverIp, serverPort);
         this.userId = userId;
@@ -33,7 +41,6 @@ public class ConnectionManager {
         authenticateUser();
 
         messageListenerThread = new Thread(this::listenForMessages);
-        messageListenerThread.setDaemon(true);
         messageListenerThread.start();
     }
 
@@ -56,6 +63,11 @@ public class ConnectionManager {
         return userId;
     }
 
+    /**
+     * Sets the message listener to handle incoming messages
+     * @param listener MessageListener object
+     * @see MessageListener
+     */
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }

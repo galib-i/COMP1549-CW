@@ -20,13 +20,16 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+/**
+ * Displays list of connected users, specifying roles and status, with right-click option to view details or private message
+ */
 public class UserListView extends JPanel {
-    private static final String SUFFIX_YOU= " (You)";
+    private static final String SUFFIX_YOU = " (You)";
     private static final String SUFFIX_COORDINATOR = " 👑";
     private static final String SUFFIX_INACTIVE = " 🌙";
 
     private final JList<String> usersList = new JList<>();
-    private final DefaultListModel<String> usersModel = new DefaultListModel<>();
+    private final DefaultListModel<String> usersModel = new DefaultListModel<>(); // Allows list to be updated dynamically
     private final JPopupMenu userContextMenu = new JPopupMenu();
     private final JMenuItem optionViewDetails = new JMenuItem("View user details");
     private final JMenuItem optionPrivateMessage = new JMenuItem("Private message");
@@ -43,7 +46,7 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void updateUserList(Map<String, Map<String, String>> userList, String userId) {
+    public void updateUserList(Map<String, Map<String, String>> userList, String userId) { // Not in a controller as it's a view update
         List<String> formattedUsers = new ArrayList<>();
 
         for (Map.Entry<String, Map<String, String>> entry : userList.entrySet()) {
@@ -83,11 +86,11 @@ public class UserListView extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     int index = usersList.locationToIndex(e.getPoint());
-                    Rectangle clickedCellBounds = usersList.getCellBounds(index, index);
+                    Rectangle clickedCellBounds = usersList.getCellBounds(index, index); // Get the rectangle bounds of the clicked item
  
                     if (clickedCellBounds.contains(e.getPoint())) {
-                        String clickedUser = usersModel.getElementAt(index);
-                        if (!clickedUser.contains("(You)")) {
+                        String clickedUser = usersModel.getElementAt(index); // Get the id of the clicked user
+                        if (!clickedUser.contains("(You)")) { // Don't open menu for yourself
                             usersList.setSelectedIndex(index);
                             userContextMenu.show(usersList, e.getX(), e.getY());
                         }

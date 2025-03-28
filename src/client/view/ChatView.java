@@ -10,6 +10,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
+/**
+ * Displays chat messages in a tabbed pane (Group chat and private chats)
+ */
 public class ChatView extends JPanel {
     private final JTabbedPane chatTabs = new JTabbedPane();
     private final HashMap<String, ChatPanel> chats = new HashMap<>();
