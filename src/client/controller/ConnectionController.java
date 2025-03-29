@@ -12,14 +12,14 @@ import client.view.LoginView;
 public class ConnectionController {
     private final LoginView view;
     private final ClientController clientController;
-    
+
     public ConnectionController(ConnectionManager model, LoginView view, ClientController clientController) {
         this.view = view;
         this.clientController = clientController;
-        
+
         view.connectButtonAction(e -> requestConnection());
     }
-    
+
     private void requestConnection() {
         LoginView.ConnectionDetails details = view.getConnectionDetails();
 

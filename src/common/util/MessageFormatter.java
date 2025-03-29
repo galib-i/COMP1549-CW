@@ -25,9 +25,9 @@ public class MessageFormatter {
     public static String format(Message message) {
         return MESSAGE_FORMAT.formatted(message.getType(), message.getSender(), message.getRecipient(), message.getContent());
     }
-    
+
     /**
-     * Formats a string message back into a message object, if map, formats into map
+     * Parses a string message back into a message object, if map, parse into map
      * @param messageString String message to be parsed
      * @return Message object
      */

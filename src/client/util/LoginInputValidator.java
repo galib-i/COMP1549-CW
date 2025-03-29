@@ -6,7 +6,7 @@ package client.util;
 public class LoginInputValidator {
     private static final String USER_ID_PATTERN = "[A-Za-z0-9]+";
     private static final String IP_ADDRESS_PATTERN = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
-    
+
     public static void validateConnectionInput(String userId, String serverIp, String serverPort) {
         if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
             throw new IllegalArgumentException("All fields are required!");

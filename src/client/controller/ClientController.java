@@ -24,28 +24,28 @@ public class ClientController {
         this.chatWindowView = new ChatWindowView();
         this.activityModel = new ActivityModel(connectionManager);
     }
-    
+
     public void loadLogin() {
         new ConnectionController(connectionManager, loginView, this);
         loginView.setVisible(true);
     }
-    
+
     public void loadChatWindow(String userId, String serverIp, String serverPort) throws IOException {
         chatWindowView.updateCurrentServerLabel(serverIp, serverPort);
         chatWindowView.quitButtonAction(e -> quitClient());
-        
+
         ActivityController activityController = new ActivityController(activityModel, chatWindowView);
         new MessageController(connectionManager, chatWindowView, activityController);
 
         // Create connection listener in the controller
         connectionManager.setLostConnectionListener(createConnectionListener());
-        
+
         connectionManager.connect(userId, serverIp, serverPort);
-        
+
         chatWindowView.setVisible(true);
         loginView.dispose();
     }
-    
+
     /**
      * Creates a connection listener to handle connection events
      * Better separates the implementation from the method flow
@@ -56,7 +56,7 @@ public class ClientController {
             public void onLostConnection(boolean attemptReconnection) {
                 handleLostConnection(attemptReconnection);
             }
-            
+
             @Override
             public void onReconnectionSuccess() {
                 chatWindowView.getChatView().displayReconnectedMessage();
@@ -64,7 +64,7 @@ public class ClientController {
             }
         };
     }
-    
+
     private void handleLostConnection(boolean attemptReconnection) {
         if (attemptReconnection) {
             chatWindowView.disableForReconnectAttempt();
@@ -73,7 +73,7 @@ public class ClientController {
             quitClient();
         }
     }
-    
+
     private void quitClient() {
         connectionManager.disconnect();
         chatWindowView.dispose();

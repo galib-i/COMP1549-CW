@@ -33,10 +33,10 @@ public class LoginView extends JFrame {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(64, 32, 64, 32));
         JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
-        
+
         JPanel userIdPanel = createLabelledField("User ID:", "", userIdField);
         mainPanel.add(userIdPanel, BorderLayout.NORTH);
-        
+
         JPanel serverDetailsPanel = new JPanel(new BorderLayout(5, 5));
         serverDetailsPanel.setBorder(BorderFactory.createTitledBorder("Server"));
 
@@ -52,12 +52,12 @@ public class LoginView extends JFrame {
         add(rootPanel);
         getRootPane().setDefaultButton(connectButton);
         pack();
-    
+
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+
     private JPanel createLabelledField(String labelText, String placeholder, JTextField field) {
         field.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         field.setColumns(15);
@@ -66,11 +66,11 @@ public class LoginView extends JFrame {
         JLabel label = new JLabel(labelText);
         label.setFont(label.getFont().deriveFont(Font.PLAIN));
         label.setPreferredSize(new Dimension(45, 0));
-    
+
         JPanel labelledField = new JPanel(new BorderLayout(5, 5));
         labelledField.add(label, BorderLayout.WEST);
         labelledField.add(field, BorderLayout.CENTER);
-        
+
         return labelledField;
     }
 

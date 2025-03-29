@@ -10,11 +10,11 @@ public class ActivityModel {
     private final ConnectionManager connectionManager;
     private Timer timer;
     private boolean active = true;
-    
+
     public ActivityModel(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
-    
+
     public void startTimer() {
         if (timer != null) {
             timer.stop();
@@ -30,7 +30,7 @@ public class ActivityModel {
         timer.setRepeats(false);
         timer.start();
     }
-    
+
     public void trackActivity() {
         if (!active) {
             active = true;
@@ -38,7 +38,7 @@ public class ActivityModel {
         }
         startTimer();
     }
-    
+
     public void shutdown() {
         if (timer != null) {
             timer.stop();

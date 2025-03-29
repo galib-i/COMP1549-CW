@@ -19,7 +19,7 @@ public class User {
     private Status status;
     private final String socketAddress;
     private PrintWriter writer;
-    
+
     public User(String userId, String socketAddress, PrintWriter writer) {
         this.userId = userId;
         this.role = Role.MEMBER;
@@ -28,11 +28,11 @@ public class User {
         this.writer = writer;
 
     }
-    
+
     public String getUserId() {
         return userId;
     }
-    
+
     public Role getRole() {
         return role;
     }
@@ -55,11 +55,11 @@ public class User {
             status = Status.ACTIVE;
         }
     }
-    
+
     public String getSocketAddress() {
         return socketAddress;
     }
-    
+
     public PrintWriter getWriter() {
         return writer;
     }

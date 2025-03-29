@@ -23,7 +23,7 @@ public class ChatView extends JPanel {
         ChatPanel groupChatPanel = new ChatPanel();
         chats.put("Group", groupChatPanel);
         chatTabs.addTab("Group", groupChatPanel);
-        
+
         add(chatTabs, BorderLayout.CENTER);
     }
 
@@ -37,12 +37,12 @@ public class ChatView extends JPanel {
             chatArea.setEditable(false);
             chatArea.setLineWrap(true);
             chatArea.setWrapStyleWord(true);
-            
+
             JScrollPane scrollPane = new JScrollPane(chatArea);
             scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
             add(scrollPane, BorderLayout.CENTER);
         }
-    } 
+    }
 
     public void displayMessage(String chatName, String timestamp, String sender, String message) {
         ChatPanel chatPanel = chats.get(chatName);

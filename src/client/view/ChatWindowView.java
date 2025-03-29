@@ -32,10 +32,10 @@ public class ChatWindowView extends JFrame {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JPanel mainPanel = new JPanel(new BorderLayout(0, 10)); 
-      
+
         mainPanel.add(chatView, BorderLayout.CENTER);
         rootPanel.add(userListView, BorderLayout.EAST);
-       
+
         JPanel inputPanel = new JPanel(new BorderLayout(10, 0));
         messageField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         inputPanel.add(messageField, BorderLayout.CENTER);
@@ -52,7 +52,7 @@ public class ChatWindowView extends JFrame {
         add(rootPanel);
         setSize(700, 400);
         setLocationRelativeTo(null); // center window
- 
+
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         exitWindowAction(); // window closure mimics quit button
     }

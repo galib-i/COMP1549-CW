@@ -18,7 +18,7 @@ public class MessageController {
     public MessageController(UserManager userManager) {
         this.userManager = userManager;
     }
-    
+
     /**
      * When a user joins the server, announce join, update user list and notify user of coordinator
      * @param userId Id of the user that joined
@@ -123,7 +123,7 @@ public class MessageController {
         for (User user : userManager.getUsers()) {
             user.getWriter().println(content);
         }
-    } 
+    }
 
     /**
      * Controls the communication between the client and server

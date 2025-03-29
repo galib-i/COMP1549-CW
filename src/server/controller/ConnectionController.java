@@ -22,7 +22,7 @@ public class ConnectionController {
         this.userManager = userManager;
         this.messageController = new MessageController(userManager);
     }
-    
+
     /**
      * Processes the new connection from a client by creating a new thread to control the connection
      * @param socket Socket connection to the client

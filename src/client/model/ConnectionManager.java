@@ -27,7 +27,7 @@ public class ConnectionManager {
     private final int MAX_RECONNECT_ATTEMPTS = 3;
     private String lastServerIp;
     private String lastServerPort;
-    
+
     /**
      * Sends a request to the server, checks if user is unique and starts a message listener thread
      * @param userId Id of the user to connect
@@ -40,11 +40,11 @@ public class ConnectionManager {
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
         LoginInputValidator.validateConnectionInput(userId, serverIp, serverPort);
         this.userId = userId;
-        
+
         // Store server details for reconnection
         this.lastServerIp = serverIp;
         this.lastServerPort = serverPort;
-        
+
         connectToServer(serverIp, serverPort);
         authenticateUser();
 
@@ -52,19 +52,19 @@ public class ConnectionManager {
         messageListenerThread.start();
     }
 
-    private void connectToServer(String serverIp, String serverPort) throws IOException {
+    protected void connectToServer(String serverIp, String serverPort) throws IOException {
         socket = new Socket(serverIp, Integer.parseInt(serverPort));
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         writer = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    private void authenticateUser() throws IllegalArgumentException, IOException {
+    protected void authenticateUser() throws IllegalArgumentException, IOException {
         Message joinMessage = Message.requestJoin(userId);
         writer.println(MessageFormatter.format(joinMessage));
 
         String response = reader.readLine();
         Message responseMsg = MessageFormatter.parse(response);
-        
+
         if (responseMsg.getType() == Message.Type.REJECT_USER_JOIN) {
             socket.close();
             throw new IllegalArgumentException("User ID already in use!");
@@ -97,15 +97,15 @@ public class ConnectionManager {
     public void sendMessage(String recipient, String message) {
         sendFormattedMessage(Message.sendMessage(userId, recipient, message));
     }
-    
+
     public void sendUserDetailsRequest(String senderUserId, String targetUserId) {
         sendFormattedMessage(Message.requestUserDetails(userId, targetUserId));
     }
-    
-    public void toggleStatus() {        
+
+    public void toggleStatus() {
         sendFormattedMessage(Message.updateStatus(userId));
     }
-    
+
     public void openPrivateChat(String targetUserId) {
         sendFormattedMessage(Message.openPrivateChat(userId, targetUserId));
     }
@@ -132,7 +132,7 @@ public class ConnectionManager {
             }
         }
     }
-    
+
     private void processMessage(String messageString) {
         Message parsedMessage = MessageFormatter.parse(messageString);
         if (parsedMessage == null) {
@@ -152,7 +152,7 @@ public class ConnectionManager {
     private void handleLostConnection() {
         if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
             reconnectAttempts++;
-            
+
             try {
                 Thread.sleep(800 * reconnectAttempts);
                 attemptReconnection();

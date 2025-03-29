@@ -14,11 +14,11 @@ import common.model.Message;
 public class MessageController implements MessageListener {
     private final ConnectionManager model;
     private final ChatWindowView view;
-    
+
     public MessageController(ConnectionManager model, ChatWindowView view, ActivityController activityController) {
         this.model = model;
         this.view = view;
-        
+
         view.getUserListView().viewDetailsAction(e -> showUserDetails());
         view.getUserListView().privateMessageAction(e -> openPrivateChat());
         view.sendButtonAction(e -> sendMessage());
@@ -80,7 +80,7 @@ public class MessageController implements MessageListener {
     }
 
     private void showUserDetails() {
-        String selectedUser = view.getUserListView().getSelectedUser();  
+        String selectedUser = view.getUserListView().getSelectedUser();
         model.sendUserDetailsRequest(model.getUserId(), selectedUser);
     }
 
@@ -92,7 +92,7 @@ public class MessageController implements MessageListener {
         String formattedDetails = "User ID: %s\nRole: %s\nStatus: %s\nConnected through: %s"
             .formatted(userId, details.get("role"), details.get("status"), details.get("socketAddress")
         );
-        
+
         view.getUserListView().showMessage("%s's details".formatted(userId), formattedDetails);
     }
 

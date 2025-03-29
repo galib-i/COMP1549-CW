@@ -38,7 +38,7 @@ public class UserListView extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Online"));
         setPreferredSize(new Dimension(120, 0));
-        
+
         usersList.setModel(usersModel);
 
         rightClickAction();
@@ -49,7 +49,7 @@ public class UserListView extends JPanel {
     public void updateUserList(Map<String, Map<String, String>> userList, String userId) { // NOTE: Not in a controller as it's a view update
     if (userList == null || userId == null) {
         return; // Do nothing if any missing parameter
-    }    
+    }
     List<String> formattedUsers = new ArrayList<>();
 
         for (Map.Entry<String, Map<String, String>> entry : userList.entrySet()) {
@@ -83,14 +83,14 @@ public class UserListView extends JPanel {
     private void rightClickAction() {
         userContextMenu.add(optionViewDetails);
         userContextMenu.add(optionPrivateMessage);
-        
+
         usersList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     int index = usersList.locationToIndex(e.getPoint());
                     Rectangle clickedCellBounds = usersList.getCellBounds(index, index); // Get the rectangle bounds of the clicked item
- 
+
                     if (clickedCellBounds.contains(e.getPoint())) {
                         String clickedUser = usersModel.getElementAt(index); // Get the id of the clicked user
                         if (!clickedUser.contains("(You)")) { // Don't open menu for yourself

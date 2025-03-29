@@ -37,7 +37,7 @@ public class UserManager {
      */
     public synchronized void removeUser(String userId) {
         connectedUsers.remove(userId);
-    
+
         if (userId.equals(coordinatorId)) {
             if (!connectedUsers.isEmpty()) {
                 coordinatorId = connectedUsers.keySet().iterator().next();
@@ -88,10 +88,10 @@ public class UserManager {
     public Map<String, Map<String, String>> getAllUserDetails() {
         Map<String, Map<String, String>> allDetails = new LinkedHashMap<>();
         // Key: userId, Value: userDetails
-        connectedUsers.forEach((userId, user) -> 
+        connectedUsers.forEach((userId, user) ->
             allDetails.put(userId, getUserDetails(userId, false))
         );
-        
+
         return allDetails;
     }
 
