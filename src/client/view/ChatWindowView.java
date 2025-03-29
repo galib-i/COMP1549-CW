@@ -25,6 +25,9 @@ public class ChatWindowView extends JFrame {
     private final JButton quitButton = new JButton("Quit");
     private final JLabel currentServerLabel = new JLabel();
 
+    private String serverIp = null;
+    private String serverPort = null;
+
     public ChatWindowView() {
         JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
         rootPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -51,7 +54,7 @@ public class ChatWindowView extends JFrame {
         setLocationRelativeTo(null); // center window
  
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        exitWindowAction(); // x button mimics quit button
+        exitWindowAction(); // window closure mimics quit button
     }
 
     private void exitWindowAction() {
@@ -64,6 +67,8 @@ public class ChatWindowView extends JFrame {
     }
 
     public void updateCurrentServerLabel(String serverIp, String serverPort) {
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
         currentServerLabel.setText("Connected to %s:%s".formatted(serverIp, serverPort));
     }
 
@@ -93,7 +98,30 @@ public class ChatWindowView extends JFrame {
         return userListView;
     }
 
-    public void showDisconnectedServerMessage() {
+    public void disableForReconnectAttempt() {
+        currentServerLabel.setText("Lost connection! Attempting to reconnect...");
+        currentServerLabel.setForeground(Color.RED);
+
+        toggleComponentsUse(false);
+    }
+
+    public void enableAfterReconnection() {
+        currentServerLabel.setText("Connected to %s:%s".formatted(serverIp, serverPort));
+        currentServerLabel.setForeground(Color.BLACK);
+
+        toggleComponentsUse(true);
+    }
+
+    private void toggleComponentsUse(boolean enabled) {
+        messageField.setEnabled(enabled);
+        sendButton.setEnabled(enabled);
+
+        userListView.setEnabled(enabled);
+
+        chatView.setEnabled(enabled);
+    }
+
+    public void showLostConnectionMessage() {
         JOptionPane.showMessageDialog(this, "Connection to server lost", "Server Disconnected", JOptionPane.ERROR_MESSAGE);
     }
 }

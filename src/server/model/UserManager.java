@@ -18,9 +18,10 @@ public class UserManager {
 
     /**
      * Registers user to the server and if the first one, assign coordinator role
+     * Synchronised to ensure only one thread can modify the user list at a time
      * @param user Object of the user to be added
      */
-    public void addUser(User user) {
+    public synchronized void addUser(User user) {
         connectedUsers.put(user.getUserId(), user);
 
         if (coordinatorId == null) {
@@ -31,14 +32,19 @@ public class UserManager {
 
     /**
      * Removes user from the server and assigns coordinator role to the next user (start of the LinkedHashMap)
+     * Synchronised to ensure only one thread can modify the user list at a time
      * @param userId Id of the user to be removed
      */
-    public void removeUser(String userId) {
+    public synchronized void removeUser(String userId) {
         connectedUsers.remove(userId);
-
-        if (userId.equals(coordinatorId) && !connectedUsers.isEmpty()) {
-            coordinatorId = connectedUsers.keySet().iterator().next();
-            connectedUsers.get(coordinatorId).promoteToCoordinator();
+    
+        if (userId.equals(coordinatorId)) {
+            if (!connectedUsers.isEmpty()) {
+                coordinatorId = connectedUsers.keySet().iterator().next();
+                connectedUsers.get(coordinatorId).promoteToCoordinator();
+            } else {
+                coordinatorId = null; // Reset coordinator if all leave
+            }
         }
     }
 

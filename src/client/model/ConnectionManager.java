@@ -20,8 +20,12 @@ public class ConnectionManager {
     private PrintWriter writer;
     private Thread messageListenerThread;
     private MessageListener messageListener;
-    private DisconnectedServerListener disconnectedServerListener;
+    private LostConnectionListener lostConnectionListener;
     private String userId;
+    private int reconnectAttempts = 0;
+    private final int MAX_RECONNECT_ATTEMPTS = 3;
+    private String lastServerIp;
+    private String lastServerPort;
     
     /**
      * Sends a request to the server, checks if user is unique and starts a message listener thread
@@ -36,14 +40,21 @@ public class ConnectionManager {
         validateInput(userId, serverIp, serverPort);
         this.userId = userId;
         
-        socket = new Socket(serverIp, Integer.parseInt(serverPort));
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new PrintWriter(socket.getOutputStream(), true);
+        // Store server details for reconnection
+        this.lastServerIp = serverIp;
+        this.lastServerPort = serverPort;
         
+        connectToServer(serverIp, serverPort);
         authenticateUser();
 
         messageListenerThread = new Thread(this::listenForMessages);
         messageListenerThread.start();
+    }
+
+    private void connectToServer(String serverIp, String serverPort) throws IOException {
+        socket = new Socket(serverIp, Integer.parseInt(serverPort));
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(socket.getOutputStream(), true);
     }
 
     private void authenticateUser() throws IllegalArgumentException, IOException {
@@ -76,10 +87,10 @@ public class ConnectionManager {
     /**
      * Sets the disconnection listener to handle server disconnection (server disconnects but client is still running)
      * @param listener
-     * @see DisconnectedServerListener
+     * @see LostConnectionListener
      */
-    public void setDisconnectionListener(DisconnectedServerListener listener) {
-        this.disconnectedServerListener = listener;
+    public void setLostConnectionListener(LostConnectionListener listener) {
+        this.lostConnectionListener = listener;
     }
 
     public void sendMessage(String recipient, String message) {
@@ -111,11 +122,12 @@ public class ConnectionManager {
                 processMessage(message);
             }
         } catch (SocketException e) {
-            handleDisconnectedServer();
+            lostConnectionListener.onLostConnection(true);
+            handleLostConnection();
         } catch (IOException e) {
             if (!socket.isClosed()) {
                 e.printStackTrace();
-                handleDisconnectedServer();
+                handleLostConnection();
             }
         }
     }
@@ -133,8 +145,31 @@ public class ConnectionManager {
         }
     }
 
-    private void handleDisconnectedServer() {
-        disconnectedServerListener.whenServerDisconnected();
+    private void handleLostConnection() {
+        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            reconnectAttempts++;
+            
+            try {
+                Thread.sleep(1000 * reconnectAttempts);
+                
+                connectToServer(lastServerIp, lastServerPort);
+                authenticateUser();
+                reconnectAttempts = 0;
+
+                lostConnectionListener.onReconnectionSuccess();
+                messageListenerThread = new Thread(this::listenForMessages);
+                messageListenerThread.start();
+
+
+                return;
+
+            } catch (IOException | InterruptedException | IllegalArgumentException e) {
+                handleLostConnection(); // Retry if reconnection fails
+                return;
+            }
+        }
+
+        lostConnectionListener.onLostConnection(false);
     }
 
     private void validateInput(String userId, String serverIp, String serverPort) {

@@ -2,10 +2,9 @@ package client.controller;
 
 import java.io.IOException;
 
-import javax.swing.SwingUtilities;
-
 import client.model.ActivityModel;
 import client.model.ConnectionManager;
+import client.model.LostConnectionListener;
 import client.view.ChatWindowView;
 import client.view.LoginView;
 
@@ -38,16 +37,41 @@ public class ClientController {
         ActivityController activityController = new ActivityController(activityModel, chatWindowView);
         new MessageController(connectionManager, chatWindowView, activityController);
 
-        connectionManager.setDisconnectionListener(this::handleServerDisconnection);        
+        // Create connection listener in the controller
+        connectionManager.setLostConnectionListener(createConnectionListener());
+        
         connectionManager.connect(userId, serverIp, serverPort);
         
         chatWindowView.setVisible(true);
         loginView.dispose();
     }
     
-    private void handleServerDisconnection() {
-        chatWindowView.showDisconnectedServerMessage();
-        quitClient();
+    /**
+     * Creates a connection listener to handle connection events
+     * Better separates the implementation from the method flow
+     */
+    private LostConnectionListener createConnectionListener() {
+        return new LostConnectionListener() {
+            @Override
+            public void onLostConnection(boolean attemptReconnection) {
+                handleLostConnection(attemptReconnection);
+            }
+            
+            @Override
+            public void onReconnectionSuccess() {
+                chatWindowView.getChatView().displayReconnectedMessage();
+                chatWindowView.enableAfterReconnection();
+            }
+        };
+    }
+    
+    private void handleLostConnection(boolean attemptReconnection) {
+        if (attemptReconnection) {
+            chatWindowView.disableForReconnectAttempt();
+        } else {
+            chatWindowView.showLostConnectionMessage();
+            quitClient();
+        }
     }
     
     private void quitClient() {

@@ -27,14 +27,6 @@ public class ChatView extends JPanel {
         add(chatTabs, BorderLayout.CENTER);
     }
 
-    public void displayMessage(String chatName, String timestamp, String sender, String message) {
-        ChatPanel chatPanel = chats.get(chatName);
-        if (chatPanel == null) {
-            return;
-        }
-        chatPanel.chatArea.append("[%s] %s: %s\n".formatted(timestamp, sender, message));
-    }
-
     private static class ChatPanel extends JPanel {
         private final JTextArea chatArea;
 
@@ -51,6 +43,19 @@ public class ChatView extends JPanel {
             add(scrollPane, BorderLayout.CENTER);
         }
     } 
+
+    public void displayMessage(String chatName, String timestamp, String sender, String message) {
+        ChatPanel chatPanel = chats.get(chatName);
+        if (chatPanel == null) {
+            return;
+        }
+        chatPanel.chatArea.append("[%s] %s: %s\n".formatted(timestamp, sender, message));
+    }
+
+    public void displayReconnectedMessage() {
+        ChatPanel groupChatPanel = chats.get("Group");
+        groupChatPanel.chatArea.append("\n\nRECONNECTED\n\n");
+    }
 
     public String getCurrentChatName() {
         return chatTabs.getTitleAt(chatTabs.getSelectedIndex());
