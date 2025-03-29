@@ -9,8 +9,7 @@ import client.view.ChatWindowView;
 import client.view.LoginView;
 
 /**
- * Connects the client views and models to the server
- * acts as the main controller for the client
+ * Connects the client views and models to the server acts as the main controller for the client
  */
 public class ClientController {
     private final ConnectionManager connectionManager;
@@ -48,7 +47,6 @@ public class ClientController {
 
     /**
      * Creates a connection listener to handle connection events
-     * Better separates the implementation from the method flow
      */
     private LostConnectionListener createConnectionListener() {
         return new LostConnectionListener() {

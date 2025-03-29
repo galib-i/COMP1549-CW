@@ -8,8 +8,7 @@ import client.view.ChatWindowView;
 import common.model.Message;
 
 /**
- * Connects the chat window view to the server
- * and controls client side communication
+ * Connects the chat window view to the server and controls client side communication
  */
 public class MessageController implements MessageListener {
     private final ConnectionManager model;
