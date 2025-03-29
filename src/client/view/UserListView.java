@@ -46,8 +46,11 @@ public class UserListView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void updateUserList(Map<String, Map<String, String>> userList, String userId) { // Not in a controller as it's a view update
-        List<String> formattedUsers = new ArrayList<>();
+    public void updateUserList(Map<String, Map<String, String>> userList, String userId) { // NOTE: Not in a controller as it's a view update
+    if (userList == null || userId == null) {
+        return; // Do nothing if any missing parameter
+    }    
+    List<String> formattedUsers = new ArrayList<>();
 
         for (Map.Entry<String, Map<String, String>> entry : userList.entrySet()) {
             String user = entry.getKey();
@@ -114,8 +117,6 @@ public class UserListView extends JPanel {
     }
 
     public void showMessage(String title, String message) {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
-        });
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -79,20 +79,14 @@ public class ConnectionController {
      * Processes the communication (different types of messages) between the server and client
      * @param reader BufferedReader to read messages from the client
      * @param userId Id of the user
+     * @see MessageController
      */
     private void controlClientCommunication(String userId, BufferedReader reader) {
         try {
             String messageStr;
             while ((messageStr = reader.readLine()) != null) { // Constantly listen for messages from the client
                 Message message = MessageFormatter.parse(messageStr);
-                
-                switch (message.getType()) {
-                    case MESSAGE -> controlMessage(userId, message);
-                    case OPEN_PRIVATE_CHAT -> controlPrivateChat(userId, message);
-                    case USER_DETAILS_REQUEST -> controlUserDetails(userId, message);
-                    case STATUS_UPDATE -> controlStatusUpdate(userId);
-                    default -> {}
-                }
+                messageController.controlCommunication(userId, message);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,26 +102,6 @@ public class ConnectionController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void controlMessage(String senderId, Message message) {
-        String recipient = message.getRecipient();
-        String content = (String) message.getContent();
-        messageController.sendMessage(senderId, recipient, content);
-    }
-
-    private void controlUserDetails(String requesterId, Message message) {
-        String targetId = (String) message.getContent();
-        messageController.sendUserDetails(requesterId, targetId);
-    }
-
-    private void controlStatusUpdate(String userId) {
-        messageController.controlStatusUpdate(userId);
-    }
-
-    private void controlPrivateChat(String senderId, Message message) {
-        String targetUserId = (String) message.getContent();
-        messageController.openPrivateChat(senderId, targetUserId);
     }
 }
 

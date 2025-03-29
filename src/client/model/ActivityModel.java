@@ -2,21 +2,17 @@ package client.model;
 
 import javax.swing.Timer;
 
-import common.util.ConfigLoader;
-
 /**
  * Tracks user activity and toggles the user's status when the user is inactive after a set timeout, based on the config
  */
 public class ActivityModel {
-    private final int TIMEOUT;
+    private final int TIMEOUT = 30000; // milliseconds
     private final ConnectionManager connectionManager;
     private Timer timer;
     private boolean active = true;
     
     public ActivityModel(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        ConfigLoader config = new ConfigLoader();
-        this.TIMEOUT = config.getInt("inactivity.timeout.ms");
     }
     
     public void startTimer() {
@@ -47,9 +43,5 @@ public class ActivityModel {
         if (timer != null) {
             timer.stop();
         }
-    }
-    
-    public boolean isActive() {
-        return active;
     }
 }

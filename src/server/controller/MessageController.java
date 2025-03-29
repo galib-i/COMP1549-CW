@@ -12,6 +12,8 @@ import server.model.UserManager;
  */
 public class MessageController {
     private final UserManager userManager;
+    private static final String SERVER_ID = "[SERVER]";
+    private static final String GROUP_ID = "Group";
 
     public MessageController(UserManager userManager) {
         this.userManager = userManager;
@@ -22,10 +24,10 @@ public class MessageController {
      * @param userId Id of the user that joined
      */
     public void controlUserJoin(String userId) {
-        sendMessage("[SERVER]", "Group", "%s has joined the chat.".formatted(userId));
+        broadcastSystemMessage("%s has joined the chat.".formatted(userId));
         broadcastUserList();
         String coordinatorId = userManager.getCoordinatorId();
-        sendMessageToUser(userId, Message.sendMessage("[SERVER]", userId, "%s is the coordinator.".formatted(coordinatorId)));
+        notifyUser(null, userId, "%s is the coordinator.".formatted(coordinatorId));
     }
 
     /**
@@ -34,11 +36,10 @@ public class MessageController {
      * @param isCoordinator True: user was the coordinator
      */
     public void controlUserLeave(String userId, boolean isCoordinator) {
-        sendMessage("[SERVER]", "Group", "%s has left the chat.".formatted(userId));
+        broadcastSystemMessage("%s has left the chat.".formatted(userId));
 
         if (isCoordinator) {
-            sendMessage("[SERVER]", "Group", 
-                "The old coordinator, %s, has left the chat. %s is the new coordinator.".formatted(userId, userManager.getCoordinatorId()));
+            broadcastSystemMessage("The old coordinator, %s, has left the chat. %s is the new coordinator.".formatted(userId, userManager.getCoordinatorId()));
         }
         broadcastUserList();
 
@@ -64,14 +65,24 @@ public class MessageController {
         Message message = Message.sendMessage(sender, recipient, content);
         String formattedMessage = MessageFormatter.format(message);
 
-        if (recipient.equals("Group")) {
+        if (recipient.equals(GROUP_ID)) {
             broadcastMessage(formattedMessage);
         } else {
-            User user = userManager.getUser(recipient);
-            user.getWriter().println(formattedMessage);
+            sendPrivateMessage(sender, recipient, formattedMessage);
+        }
+    }
 
+    private void sendPrivateMessage(String sender, String recipient, String formattedMessage) {
+        User recipientUser = userManager.getUser(recipient);
+        if (recipientUser != null) {
+            recipientUser.getWriter().println(formattedMessage);
+        }
+
+        if (!sender.equals(SERVER_ID)) { // Send to both sender and recipients
             User senderUser = userManager.getUser(sender);
-            senderUser.getWriter().println(formattedMessage);
+            if (senderUser != null) {
+                senderUser.getWriter().println(formattedMessage);
+            }
         }
     }
 
@@ -85,13 +96,23 @@ public class MessageController {
     }
 
     public void notifyUser(String sender, String recipient, String content) {
+        if (sender == null) {
+            sender = SERVER_ID;
+        }
+
         sendMessageToUser(recipient, Message.sendMessage(sender, recipient, content));
+    }
+
+    private void broadcastSystemMessage(String content) {
+        sendMessage(SERVER_ID, GROUP_ID, content);
     }
 
     private void sendMessageToUser(String userId, Message message) {
         User user = userManager.getUser(userId);
-        String formattedMessage = MessageFormatter.format(message);
-        user.getWriter().println(formattedMessage);
+        if (user != null) {
+            String formattedMessage = MessageFormatter.format(message);
+            user.getWriter().println(formattedMessage);
+        }
     }
 
     private void sendMessageToGroup(Message message) {
@@ -103,4 +124,29 @@ public class MessageController {
             user.getWriter().println(content);
         }
     } 
+
+    /**
+     * Controls the communication between the client and server
+     * @param userId The user who sent the message
+     * @param message The message object to process
+     */
+    public void controlCommunication(String userId, Message message) {
+        switch (message.getType()) {
+            case MESSAGE -> {
+                String recipient = message.getRecipient();
+                String content = (String) message.getContent();
+                sendMessage(userId, recipient, content);
+            }
+            case OPEN_PRIVATE_CHAT -> {
+                String targetUserId = (String) message.getContent();
+                openPrivateChat(userId, targetUserId);
+            }
+            case USER_DETAILS_REQUEST -> {
+                String targetId = (String) message.getContent();
+                sendUserDetails(userId, targetId);
+            }
+            case STATUS_UPDATE -> controlStatusUpdate(userId);
+            default -> {}
+        }
+    }
 }

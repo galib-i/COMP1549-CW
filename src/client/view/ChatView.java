@@ -46,8 +46,8 @@ public class ChatView extends JPanel {
 
     public void displayMessage(String chatName, String timestamp, String sender, String message) {
         ChatPanel chatPanel = chats.get(chatName);
-        if (chatPanel == null) {
-            return;
+        if (chatPanel == null || timestamp == null || sender == null || message == null) {
+            return; // Do nothing if any missing parameter
         }
         chatPanel.chatArea.append("[%s] %s: %s\n".formatted(timestamp, sender, message));
     }

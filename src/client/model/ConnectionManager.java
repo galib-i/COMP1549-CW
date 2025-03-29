@@ -2,12 +2,13 @@ package client.model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.SocketException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 
+import client.util.LoginInputValidator;
 import common.model.Message;
 import common.util.MessageFormatter;
 
@@ -37,7 +38,7 @@ public class ConnectionManager {
      * @throws IOException Handles all other socket exceptions
      */
     public void connect(String userId, String serverIp, String serverPort) throws IllegalArgumentException, ConnectException, IOException {
-        validateInput(userId, serverIp, serverPort);
+        LoginInputValidator.validateConnectionInput(userId, serverIp, serverPort);
         this.userId = userId;
         
         // Store server details for reconnection
@@ -134,6 +135,9 @@ public class ConnectionManager {
     
     private void processMessage(String messageString) {
         Message parsedMessage = MessageFormatter.parse(messageString);
+        if (parsedMessage == null) {
+            return; // Do nothing if no message
+        }
         messageListener.controlCommunication(parsedMessage);
     }
 
@@ -150,19 +154,9 @@ public class ConnectionManager {
             reconnectAttempts++;
             
             try {
-                Thread.sleep(1000 * reconnectAttempts);
-                
-                connectToServer(lastServerIp, lastServerPort);
-                authenticateUser();
-                reconnectAttempts = 0;
-
-                lostConnectionListener.onReconnectionSuccess();
-                messageListenerThread = new Thread(this::listenForMessages);
-                messageListenerThread.start();
-
-
+                Thread.sleep(800 * reconnectAttempts);
+                attemptReconnection();
                 return;
-
             } catch (IOException | InterruptedException | IllegalArgumentException e) {
                 handleLostConnection(); // Retry if reconnection fails
                 return;
@@ -172,26 +166,13 @@ public class ConnectionManager {
         lostConnectionListener.onLostConnection(false);
     }
 
-    private void validateInput(String userId, String serverIp, String serverPort) {
-        if (userId.isEmpty() || serverIp.isEmpty() || serverPort.isEmpty()) {
-            throw new IllegalArgumentException("All fields are required!");
-        }
+    private void attemptReconnection() throws IOException, IllegalArgumentException {
+        connectToServer(lastServerIp, lastServerPort);
+        authenticateUser();
+        reconnectAttempts = 0;
 
-        if (!userId.matches("[A-Za-z0-9]+")) {
-            throw new IllegalArgumentException("User ID must be alphanumeric!");
-        }
-
-        if (!serverIp.matches("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$") && !serverIp.equals("localhost")) {
-            throw new IllegalArgumentException("Invalid IP address!");
-        }
-
-        try {
-            int port = Integer.parseInt(serverPort);
-            if (!(port > 0 && port <= 65535)) {
-                throw new IllegalArgumentException("Port must be between 0 and 65535!");
-            }
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Port must be a number!");
-        }
+        lostConnectionListener.onReconnectionSuccess();
+        messageListenerThread = new Thread(this::listenForMessages);
+        messageListenerThread.start();
     }
 }

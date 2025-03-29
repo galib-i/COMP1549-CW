@@ -51,6 +51,9 @@ public class MessageController implements MessageListener {
     }
 
     private void processMessage(Message message) {
+        if (message == null) {
+            return; // Do nothing if no message
+        }
         String sender = message.getSender();
         String recipient = message.getRecipient();
 

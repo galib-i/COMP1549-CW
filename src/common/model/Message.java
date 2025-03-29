@@ -17,8 +17,8 @@ public class Message {
         STATUS_UPDATE,
     }
 
-    private static final String SERVER = "[SERVER]";
-    private static final String GROUP = "Group";
+    private static final String SERVER_ID = "[SERVER]";
+    private static final String GROUP_ID = "Group";
     private final Type type;
     private final String timestamp;
     private final String sender;
@@ -61,27 +61,27 @@ public class Message {
     }
 
     public static Message requestJoin(String requesterId) {
-        return new Message(Type.USER_JOIN, requesterId, SERVER, null);
+        return new Message(Type.USER_JOIN, requesterId, SERVER_ID, null);
     }
 
     public static Message rejectJoin(String recipientId) {
-        return new Message(Type.REJECT_USER_JOIN, SERVER, recipientId, null);
+        return new Message(Type.REJECT_USER_JOIN, SERVER_ID, recipientId, null);
     }
 
     public static Message openPrivateChat(String senderId, String targetId) {
-        return new Message(Type.OPEN_PRIVATE_CHAT, senderId, SERVER, targetId);
+        return new Message(Type.OPEN_PRIVATE_CHAT, senderId, SERVER_ID, targetId);
     }
 
     public static Message closePrivateChat(String senderId) {
-        return new Message(Type.CLOSE_PRIVATE_CHAT, senderId, SERVER, null);
+        return new Message(Type.CLOSE_PRIVATE_CHAT, senderId, SERVER_ID, null);
     }
 
     public static Message requestUserDetails(String senderId, String targetId) {
-        return new Message(Type.USER_DETAILS_REQUEST, senderId, SERVER, targetId);
+        return new Message(Type.USER_DETAILS_REQUEST, senderId, SERVER_ID, targetId);
     }
 
     public static Message respondUserDetails(String recipientId, Map<String, String> details) {
-        return new Message(Type.USER_DETAILS_RESPONSE, SERVER, recipientId, details);
+        return new Message(Type.USER_DETAILS_RESPONSE, SERVER_ID, recipientId, details);
     }
 
     public static Message sendMessage(String sender, String recipient, String content) {
@@ -89,11 +89,11 @@ public class Message {
     }
 
     public static Message sendUserList(Map<String, Map<String, String>> userList) {
-        return new Message(Type.USER_LIST, SERVER, GROUP, userList);
+        return new Message(Type.USER_LIST, SERVER_ID, GROUP_ID, userList);
     }
 
     public static Message updateStatus(String userId) {
-        return new Message(Type.STATUS_UPDATE, SERVER, GROUP, userId);
+        return new Message(Type.STATUS_UPDATE, SERVER_ID, GROUP_ID, userId);
     }
 
 }

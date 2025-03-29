@@ -17,7 +17,7 @@ public class ConfigLoader {
             InputStream input = new FileInputStream(CONFIG_FILE);
             properties.load(input);
         } catch (IOException e) {
-            System.out.println("Error loading config file:\n" + e.getMessage());
+            System.err.println("Error loading config file:\n" + e.getMessage());
         }
     }
 

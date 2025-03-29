@@ -70,6 +70,10 @@ public class UserManager {
         User user = connectedUsers.get(userId);
         Map<String, String> userDetails = new LinkedHashMap<>();
 
+        if (user == null) { // Empty details if no user
+            return userDetails;
+        }
+
         if (allDetails) {
             userDetails.put("userId", user.getUserId());
             userDetails.put("socketAddress", user.getSocketAddress());
@@ -93,6 +97,8 @@ public class UserManager {
 
     public void toggleUserStatus(String userId) {
         User user = connectedUsers.get(userId);
-        user.toggleStatus();
+        if (user != null) { // Do nothing if no user
+            user.toggleStatus();
+        }
     }
 }
